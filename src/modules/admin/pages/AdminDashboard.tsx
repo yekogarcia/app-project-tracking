@@ -8,7 +8,7 @@ import {
   HStack,
   VStack,
 } from "@chakra-ui/react";
-import { ResponsiveLayout } from "../../../app/components/layout/ResponsiveLayout";
+
 import { BreakpointDebug } from "../../../app/components/ui/BreakpointDebug";
 import { 
   FiTrendingUp, 
@@ -19,9 +19,8 @@ import {
 
 export function AdminDashboard() {
   return (
-    <ResponsiveLayout variant="admin">
+    <VStack gap="6" align="stretch">
       <BreakpointDebug />
-      <VStack gap="6" align="stretch">
         {/* Header */}
         <Box>
           <Heading size="lg" color={{ base: "gray.900", _dark: "white" }}>
@@ -239,6 +238,5 @@ export function AdminDashboard() {
           </GridItem>
         </Grid>
       </VStack>
-    </ResponsiveLayout>
   );
 }

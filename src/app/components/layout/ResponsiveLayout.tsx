@@ -18,7 +18,7 @@ import {
 interface ResponsiveLayoutProps {
   children: React.ReactNode;
   showNavigation?: boolean;
-  variant: 'public' | 'admin';
+  variant?: 'public' | 'admin';
 }
 
 const adminMenuItems: NavigationItem[] = [
@@ -57,7 +57,7 @@ const adminMenuItems: NavigationItem[] = [
 export function ResponsiveLayout({ 
   children, 
   showNavigation = true, 
-  variant 
+  variant = 'admin'
 }: ResponsiveLayoutProps) {
   const { isMobile } = useBreakpoint();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -102,13 +102,9 @@ export function ResponsiveLayout({
         </Box>
       </Flex>
 
-      {/* Debug Components - Only in development */}
-      {process.env.NODE_ENV === 'development' && (
-        <>
-          <ThemeDebug />
-          <BreakpointDebug />
-        </>
-      )}
+      {/* Debug Components */}
+      <ThemeDebug />
+      <BreakpointDebug />
     </Flex>
   );
 }

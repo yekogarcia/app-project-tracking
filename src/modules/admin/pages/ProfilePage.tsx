@@ -12,7 +12,7 @@ import {
   Badge,
   Separator,
 } from "@chakra-ui/react";
-import { ResponsiveLayout } from "../../../app/components/layout/ResponsiveLayout";
+
 import { FiEdit, FiSave, FiUser, FiCalendar } from "react-icons/fi";
 import { useState } from "react";
 
@@ -38,8 +38,7 @@ export function ProfilePage() {
   };
 
   return (
-    <ResponsiveLayout variant="admin">
-      <VStack gap="6" align="stretch">
+    <VStack gap="6" align="stretch">
         {/* Header */}
         <Box>
           <Heading size="lg" color="fg.emphasized">
@@ -235,6 +234,5 @@ export function ProfilePage() {
           </GridItem>
         </Grid>
       </VStack>
-    </ResponsiveLayout>
   );
 }

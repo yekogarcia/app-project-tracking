@@ -5,6 +5,9 @@ import { AdminDashboard } from "@/modules/admin/pages/AdminDashboard";
 import { ProfilePage } from "@/modules/admin/pages/ProfilePage";
 import { IngresosPage } from "@/modules/admin/pages/IngresosPage";
 import { EgresosPage } from "@/modules/admin/pages/EgresosPage";
+import { LoginPage } from "@/modules/auth/pages/LoginPage";
+import { ProtectedRoute } from "@/app/components/auth/ProtectedRoute";
+import { ResponsiveLayout } from "@/app/components/layout/ResponsiveLayout";
 
 export const router = createBrowserRouter([
   {
@@ -12,28 +15,68 @@ export const router = createBrowserRouter([
     element: <App />,
     children: [
       {
+        path: "/login",
+        element: <LoginPage />,
+      },
+      {
         path: "/",
-        element: <AdminDashboard />,
+        element: (
+          <ProtectedRoute>
+            <ResponsiveLayout>
+              <AdminDashboard />
+            </ResponsiveLayout>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/admin",
-        element: <AdminDashboard />,
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <ResponsiveLayout>
+              <AdminDashboard />
+            </ResponsiveLayout>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/admin/profile",
-        element: <ProfilePage />,
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <ResponsiveLayout>
+              <ProfilePage />
+            </ResponsiveLayout>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/admin/ingresos",
-        element: <IngresosPage />,
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <ResponsiveLayout>
+              <IngresosPage />
+            </ResponsiveLayout>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/admin/egresos",
-        element: <EgresosPage />,
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <ResponsiveLayout>
+              <EgresosPage />
+            </ResponsiveLayout>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/admin/proyectos",
-        element: <ProyectosPage />,
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <ResponsiveLayout>
+              <ProyectosPage />
+            </ResponsiveLayout>
+          </ProtectedRoute>
+        ),
       },
     ],
   },

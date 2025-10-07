@@ -25,7 +25,7 @@ import {
   MenuContent,
   MenuItem,
 } from "@chakra-ui/react";
-import { ResponsiveLayout } from "../../../app/components/layout/ResponsiveLayout";
+
 import { useDisclosure } from "../../../app/hooks/useDisclosure";
 import { 
   FiPlus, 
@@ -146,8 +146,7 @@ export function ProyectosPage() {
   const proyectosActivos = proyectos.filter(p => p.estado === 'activo').length;
 
   return (
-    <ResponsiveLayout variant="admin">
-      <VStack gap="6" align="stretch">
+    <VStack gap="6" align="stretch">
         {/* Header */}
         <HStack justify="space-between" align="start">
           <Box>
@@ -432,6 +431,5 @@ export function ProyectosPage() {
           ))}
         </Grid>
       </VStack>
-    </ResponsiveLayout>
   );
 }

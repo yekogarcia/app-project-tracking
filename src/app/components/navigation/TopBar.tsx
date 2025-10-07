@@ -13,6 +13,7 @@ import {
 import { FiMenu, FiUser, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "../ui/ThemeToggle";
+import { useAuth } from "../../../modules/auth/context/AuthContext";
 
 interface TopBarProps {
   onMenuClick?: () => void;
@@ -21,10 +22,11 @@ interface TopBarProps {
 
 export function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    // Aquí implementarías la lógica de logout
-    console.log("Logout clicked");
+    logout();
+    navigate("/login");
   };
 
   const handleProfileClick = () => {
@@ -75,14 +77,14 @@ export function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
                     fontSize="sm"
                     fontWeight="bold"
                   >
-                    A
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </Box>
                   <Box display={{ base: "none", md: "block" }} textAlign="left">
                     <Text fontSize="sm" fontWeight="medium">
-                      Admin User
+                      {user?.name || 'Usuario'}
                     </Text>
                     <Text fontSize="xs" color="fg.muted">
-                      admin@example.com
+                      {user?.email || ''}
                     </Text>
                   </Box>
                 </HStack>
