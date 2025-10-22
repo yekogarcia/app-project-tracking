@@ -21,11 +21,17 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
+  type: 'PERSONA' | 'EMPRESA';
   name: string;
   email: string;
+  phone: string;
+  address: string;
   password: string;
   confirmPassword: string;
 }
+
+// Re-export form types from local schemas
+export type { LoginFormData, RegisterFormData } from '../schemas';
 
 export interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
