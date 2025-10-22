@@ -60,8 +60,8 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     <FormProvider
       form={form}
       onSubmit={onSubmit}
-      width="100%"
-      maxWidth="600px"
+      width="600px"
+      maxWidth="100%"
       mx="auto"
       display="flex"
       flexDirection="column"

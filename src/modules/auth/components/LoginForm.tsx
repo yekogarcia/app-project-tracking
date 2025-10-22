@@ -1,16 +1,11 @@
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Button,
-  Text,
-  Link,
-  Alert,
-} from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { FormProvider, FormField } from '../../../app/components/ui/forms';
-import { loginSchema, type LoginFormData } from '../schemas';
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Text, Link, Alert } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { FormProvider, FormField } from "../../../app/components/ui/forms";
+import { loginSchema, type LoginFormData } from "../schemas";
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -19,37 +14,37 @@ interface LoginFormProps {
 export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const navigate = useNavigate();
   const { login, isLoading, error, clearError, isAuthenticated } = useAuth();
-  
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
   // Redirect to admin dashboard after successful login
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/admin');
+      navigate("/admin");
     }
   }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data: LoginFormData) => {
     clearError();
-    
-    console.log('Formulario enviado con credenciales:', data);
-    console.log('Iniciando login...');
-    
+
+    console.log("Formulario enviado con credenciales:", data);
+    console.log("Iniciando login...");
+
     await login(data);
   };
 
   return (
-    <FormProvider 
-      form={form} 
+    <FormProvider
+      form={form}
       onSubmit={onSubmit}
-      width="100%"
-      maxWidth="400px"
+      width="60%"
+      maxWidth="100%"
       mx="auto"
       display="flex"
       flexDirection="column"
@@ -60,7 +55,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <Alert.Title>{error}</Alert.Title>
         </Alert.Root>
       )}
-      
+
       <FormField
         name="email"
         control={form.control}
@@ -82,7 +77,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       <Button
         type="submit"
         colorScheme="blue"
-        size={{ base: 'md', md: 'lg' }}
+        size={{ base: "md", md: "lg" }}
         loading={isLoading}
         loadingText="Iniciando sesión..."
         w="full"
@@ -91,12 +86,12 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       </Button>
 
       <Text textAlign="center" fontSize="sm" color="gray.600" mt={6}>
-        ¿No tienes cuenta?{' '}
+        ¿No tienes cuenta?{" "}
         <Link
           color="blue.500"
           onClick={onSwitchToRegister}
           cursor="pointer"
-          _hover={{ textDecoration: 'underline' }}
+          _hover={{ textDecoration: "underline" }}
         >
           Regístrate aquí
         </Link>
