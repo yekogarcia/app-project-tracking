@@ -43,7 +43,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     <FormProvider
       form={form}
       onSubmit={onSubmit}
-      width="60%"
+      width="100%"
       maxWidth="100%"
       mx="auto"
       display="flex"

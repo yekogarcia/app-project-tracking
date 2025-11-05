@@ -103,8 +103,8 @@ export function ResponsiveLayout({
       </Flex>
 
       {/* Debug Components */}
-      <ThemeDebug />
-      <BreakpointDebug />
+      {/* <ThemeDebug />
+      <BreakpointDebug /> */}
     </Flex>
   );
 }

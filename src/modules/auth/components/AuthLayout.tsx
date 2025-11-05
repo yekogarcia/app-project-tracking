@@ -59,7 +59,9 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               boxShadow="lg"
               border="1px"
               borderColor={{ base: "gray.200", _dark: "gray.700" }}
-              width="fit-content"
+              width="30%"
+              minWidth="20rem"
+              maxWidth="40rem"
               mx="auto"
             >
               {children}
