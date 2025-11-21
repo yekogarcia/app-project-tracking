@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Text, Link, Alert } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { FormProvider, FormField } from "../../../app/components/ui/forms";
+import { useAuth } from "@/app/store/appStore"; // 🎯 Cambiado a Zustand
+import { Form, InputField } from "../../../app/components/ui/forms";
 import { loginSchema, type LoginFormData } from "../schemas";
 
 interface LoginFormProps {
@@ -13,7 +13,7 @@ interface LoginFormProps {
 
 export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const navigate = useNavigate();
-  const { login, isLoading, error, clearError, isAuthenticated } = useAuth();
+  const { login, isLoading, error, isAuthenticated } = useAuth(); // 🎯 Zustand hook
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -31,16 +31,11 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data: LoginFormData) => {
-    clearError();
-
-    console.log("Formulario enviado con credenciales:", data);
-    console.log("Iniciando login...");
-
     await login(data);
   };
 
   return (
-    <FormProvider
+    <Form
       form={form}
       onSubmit={onSubmit}
       width="100%"
@@ -56,7 +51,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         </Alert.Root>
       )}
 
-      <FormField
+      <InputField
         name="email"
         control={form.control}
         label="Email"
@@ -65,7 +60,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         isRequired
       />
 
-      <FormField
+      <InputField
         name="password"
         control={form.control}
         label="Contraseña"
@@ -100,6 +95,6 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       <Text textAlign="center" fontSize="xs" color="gray.500" mt={2}>
         Demo: admin@example.com / admin123
       </Text>
-    </FormProvider>
+    </Form>
   );
 }

@@ -13,7 +13,7 @@ import {
 import { FiMenu, FiUser, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "../ui/ThemeToggle";
-import { useAuth } from "../../../modules/auth/context/AuthContext";
+import { useAuth } from "@/app/store/appStore"; // 🎯 Cambiado a Zustand
 
 interface TopBarProps {
   onMenuClick?: () => void;

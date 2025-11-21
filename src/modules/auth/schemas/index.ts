@@ -18,11 +18,10 @@ export const nameSchema = z
   .max(100, 'El nombre no puede exceder 100 caracteres');
 
 export const phoneSchema = z
-  .string()
-  .min(1, 'El teléfono es requerido')
-  .regex(/^[+]?[\d\s\-()]+$/, 'Formato de teléfono inválido')
-  .min(8, 'El teléfono debe tener al menos 8 dígitos')
-  .max(20, 'El teléfono no puede exceder 20 caracteres');
+  .number({ message: 'El teléfono debe ser un número válido' })
+  .int('El teléfono debe ser un número entero')
+  .min(1000000000, 'El teléfono debe tener al menos 10 dígitos')
+  .max(9999999999, 'El teléfono debe tener máximo 10 dígitos');
 
 export const addressSchema = z
   .string()
@@ -31,11 +30,11 @@ export const addressSchema = z
   .max(200, 'La dirección no puede exceder 200 caracteres');
 
 export const userTypeSchema = z
-  .enum(['PERSONA', 'EMPRESA'], {
+  .enum(['PERSONAL', 'COMPANY'], {
     message: 'El tipo debe ser PERSONA o EMPRESA',
   });
 
-// Schemas de formularios de auth
+// Schemas de formularios de auth|
 export const loginSchema = z.object({
   email: emailSchema,
   password: z.string().min(1, 'La contraseña es requerida'),

@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../../modules/auth/context/AuthContext';
+import { useAuth } from "@/app/store/appStore"; // 🎯 Cambiado a Zustand
 import { Box, Spinner, VStack } from '@chakra-ui/react';
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  requiredRole?: 'admin' | 'user';
+  requiredRole?: 'ADMIN' | 'USER'; // 🎯 Coincidir con el store
 }
 
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {

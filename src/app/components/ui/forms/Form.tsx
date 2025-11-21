@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import {
-  FormProvider as RHFFormProvider,
+  FormProvider,
   type UseFormReturn,
   type FieldValues,
 } from "react-hook-form";
@@ -45,7 +45,7 @@ interface FormProviderProps<T extends FieldValues = FieldValues>
   centered?: boolean;
 }
 
-export function FormProvider<T extends FieldValues = FieldValues>({
+export function Form<T extends FieldValues = FieldValues>({
   form,
   onSubmit,
   children,
@@ -68,7 +68,7 @@ export function FormProvider<T extends FieldValues = FieldValues>({
   const centeringProps = centered ? { mx: "auto" } : {};
 
   return (
-    <RHFFormProvider {...form}>
+    <FormProvider {...form}>
       <form onSubmit={handleSubmit}>
         <Box
           width={finalWidth}
@@ -79,6 +79,6 @@ export function FormProvider<T extends FieldValues = FieldValues>({
           {children}
         </Box>
       </form>
-    </RHFFormProvider>
+    </FormProvider>
   );
 }

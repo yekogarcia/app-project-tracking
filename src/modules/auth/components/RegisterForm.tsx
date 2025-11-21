@@ -1,36 +1,60 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Text, Link, Alert, Grid, GridItem } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/app/store/appStore"; // 🎯 Cambiado a Zustand
 import {
-  FormProvider,
-  FormField,
-  FormSelect,
+  Form,
+  InputField,
+  SelectField,
+  NumberField,
 } from "../../../app/components/ui/forms";
 import { registerSchema, type RegisterFormData } from "../schemas";
+// import { Form } from "@/app/components/ui/forms/Form";
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
+  /** 🎯 Valores por defecto opcionales para el formulario */
+  defaultValues?: Partial<RegisterFormData>;
+  /** 📝 Modo del formulario: 'create' | 'edit' */
+  mode?: 'create' | 'edit';
 }
 
-export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
+export function RegisterForm({ 
+  onSwitchToLogin, 
+  defaultValues: propDefaultValues,
+  mode = 'create' 
+}: RegisterFormProps) {
   const navigate = useNavigate();
-  const { register, isLoading, error, clearError, isAuthenticated } = useAuth();
+  const { isLoading, error, isAuthenticated, register } = useAuth(); // 🎯 Zustand hook
+
+  // 🎯 Valores por defecto base del formulario
+  const baseDefaultValues: Partial<RegisterFormData> = {
+    type: undefined,
+    name: "",
+    email: "",
+    phone: undefined, // Campo numérico
+    address: "",
+    password: "",
+    confirmPassword: "",
+  };
+
+  // 🔄 Mergear valores por defecto base con los proporcionados
+  const mergedDefaultValues = useMemo(() => ({
+    ...baseDefaultValues,
+    ...propDefaultValues,
+  }), [propDefaultValues]);
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      type: "PERSONA",
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      password: "",
-      confirmPassword: "",
-    },
+    defaultValues: mergedDefaultValues,
   });
+
+  // 🔄 Resetear formulario cuando cambien los valores por defecto
+  useEffect(() => {
+    form.reset(mergedDefaultValues);
+  }, [form, mergedDefaultValues]);
 
   // Redirect to admin dashboard after successful registration
   useEffect(() => {
@@ -40,24 +64,12 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data: RegisterFormData) => {
-    clearError();
-
-    // Convert to the format expected by the register function
-    const registerData = {
-      type: data.type,
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      address: data.address,
-      password: data.password,
-      confirmPassword: data.confirmPassword,
-    };
-
-    await register(registerData);
+    await register(data);
+    console.log("Registro exitoso:", data);
   };
 
   return (
-    <FormProvider
+    <Form
       form={form}
       onSubmit={onSubmit}
       width="600px"
@@ -74,22 +86,22 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       )}
 
       {/* Tipo de usuario - Ocupa toda la fila */}
-      <FormSelect
+      <SelectField
         name="type"
         control={form.control}
         label="Tipo de usuario"
         placeholder="Selecciona el tipo"
         isRequired
         options={[
-          { value: "PERSONA", label: "Persona Natural" },
-          { value: "EMPRESA", label: "Empresa" },
+          { value: "PERSONAL", label: "Persona Natural" },
+          { value: "COMPANY", label: "Empresa" },
         ]}
       />
 
       {/* Grid de 2 columnas para los otros campos */}
       <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4}>
         <GridItem>
-          <FormField
+          <InputField
             name="name"
             control={form.control}
             label="Nombre completo"
@@ -99,7 +111,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         </GridItem>
 
         <GridItem>
-          <FormField
+          <InputField
             name="email"
             control={form.control}
             label="Email"
@@ -110,18 +122,21 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         </GridItem>
 
         <GridItem>
-          <FormField
+          <NumberField
             name="phone"
             control={form.control}
             label="Teléfono"
-            type="tel"
-            placeholder="+57 300 123 4567"
+            placeholder="3001234567"
+            allowDecimals={false}
+            min={1000000000}
+            max={9999999999}
+            helperText="Solo números (ej: 3001234567)"
             isRequired
           />
         </GridItem>
 
         <GridItem>
-          <FormField
+          <InputField
             name="address"
             control={form.control}
             label="Dirección"
@@ -131,7 +146,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         </GridItem>
 
         <GridItem>
-          <FormField
+          <InputField
             name="password"
             control={form.control}
             label="Contraseña"
@@ -142,7 +157,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         </GridItem>
 
         <GridItem>
-          <FormField
+          <InputField
             name="confirmPassword"
             control={form.control}
             label="Confirmar contraseña"
@@ -159,11 +174,11 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         colorScheme="blue"
         size={{ base: "md", md: "lg" }}
         loading={isLoading}
-        loadingText="Creando cuenta..."
+        loadingText={mode === 'edit' ? "Actualizando..." : "Creando cuenta..."}
         w="full"
         mt={2}
       >
-        Crear Cuenta
+        {mode === 'edit' ? 'Actualizar Datos' : 'Crear Cuenta'}
       </Button>
 
       <Text textAlign="center" fontSize="sm" color="gray.600" mt={6}>
@@ -177,6 +192,6 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           Inicia sesión aquí
         </Link>
       </Text>
-    </FormProvider>
+    </Form>
   );
 }

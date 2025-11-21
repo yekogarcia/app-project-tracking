@@ -1,14 +1,12 @@
 import { Outlet } from "react-router-dom";
 import { Box } from "@chakra-ui/react";
-import { AuthProvider } from "./modules/auth/context/AuthContext";
 
 function App() {
+  // 🎯 Ya no necesitamos AuthProvider - Zustand maneja el estado global
   return (
-    <AuthProvider>
-      <Box minH="100vh" bg="bg.canvas">
-        <Outlet />
-      </Box>
-    </AuthProvider>
+    <Box minH="100vh" bg="bg.canvas">
+      <Outlet />
+    </Box>
   );
 }
 

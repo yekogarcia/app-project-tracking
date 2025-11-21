@@ -31,7 +31,7 @@ export const router = createBrowserRouter([
       {
         path: "/admin",
         element: (
-          <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute>
             <ResponsiveLayout>
               <AdminDashboard />
             </ResponsiveLayout>
@@ -41,7 +41,7 @@ export const router = createBrowserRouter([
       {
         path: "/admin/profile",
         element: (
-          <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute requiredRole="ADMIN">
             <ResponsiveLayout>
               <ProfilePage />
             </ResponsiveLayout>
@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
       {
         path: "/admin/ingresos",
         element: (
-          <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute requiredRole="ADMIN">
             <ResponsiveLayout>
               <IngresosPage />
             </ResponsiveLayout>
@@ -61,7 +61,7 @@ export const router = createBrowserRouter([
       {
         path: "/admin/egresos",
         element: (
-          <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute requiredRole="ADMIN">
             <ResponsiveLayout>
               <EgresosPage />
             </ResponsiveLayout>
@@ -71,7 +71,7 @@ export const router = createBrowserRouter([
       {
         path: "/admin/proyectos",
         element: (
-          <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute requiredRole="ADMIN">
             <ResponsiveLayout>
               <ProyectosPage />
             </ResponsiveLayout>

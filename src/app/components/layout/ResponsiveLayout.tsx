@@ -29,10 +29,10 @@ const adminMenuItems: NavigationItem[] = [
     path: '/admin',
   },
   {
-    id: 'ingresos',
-    label: 'Ingresos',
-    icon: <FiTrendingUp />,
-    path: '/admin/ingresos',
+    id: 'proyectos',
+    label: 'Proyectos',
+    icon: <FiFolderPlus />,
+    path: '/admin/proyectos',
   },
   {
     id: 'egresos',
@@ -41,10 +41,10 @@ const adminMenuItems: NavigationItem[] = [
     path: '/admin/egresos',
   },
   {
-    id: 'proyectos',
-    label: 'Proyectos',
-    icon: <FiFolderPlus />,
-    path: '/admin/proyectos',
+    id: 'ingresos',
+    label: 'Ingresos',
+    icon: <FiTrendingUp />,
+    path: '/admin/ingresos',
   },
   {
     id: 'profile',
