@@ -1,8 +1,24 @@
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { Box } from "@chakra-ui/react";
+import { authService } from "./services/auth/AuthService";
+import { useAuthStore } from "./modules/auth/store/auth.store";
 
 function App() {
-  // 🎯 Ya no necesitamos AuthProvider - Zustand maneja el estado global
+  const { login, logout } = useAuthStore();
+
+  useEffect(() => {
+    authService.validateSession().then((resp) => {
+      if (resp.isAuthenticated) {
+        console.log("Sesión válida, usuario autenticado");
+        login(resp.user);
+      } else {
+        console.log("Sesión inválida o expirada");
+        logout();
+      }
+    });
+  }, []);
+
   return (
     <Box minH="100vh" bg="bg.canvas">
       <Outlet />

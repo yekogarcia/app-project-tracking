@@ -9,6 +9,7 @@ import { LoginPage } from "@/modules/auth/pages/LoginPage";
 import { ProtectedRoute } from "@/app/components/auth/ProtectedRoute";
 import { ResponsiveLayout } from "@/app/components/layout/ResponsiveLayout";
 
+
 export const router = createBrowserRouter([
   {
     path: "/",

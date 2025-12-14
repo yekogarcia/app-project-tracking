@@ -4,10 +4,9 @@ import {
   Button,
   Text,
   Icon,
-  Flex,
 } from "@chakra-ui/react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { NavigationItem } from "../../types";
+import type { NavigationItem } from "../../types";
 
 interface DesktopSidebarProps {
   menuItems: NavigationItem[];

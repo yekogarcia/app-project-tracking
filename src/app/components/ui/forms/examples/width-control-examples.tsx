@@ -7,7 +7,7 @@
 */
 
 // 1. Formulario que respeta el contenedor padre (recomendado para auth)
-<FormProvider
+{/* <FormProvider
   form={form}
   onSubmit={onSubmit}
   size="container"           // width: "100%" - respeta el padre
@@ -49,7 +49,7 @@
   display="flex"
   flexDirection="column"
   gap={4}
->
+> */}
 
 /*
   VENTAJAS DE ESTE ENFOQUE:

@@ -1,18 +1,23 @@
-export interface User {
-  id: string;
-  email: string;
+export interface IAccount {
+  id: number;
   name: string;
-  role: 'admin' | 'user';
+  email: string;
+  role: string;
+  company_id: number;
   avatar?: string;
-  createdAt: Date;
-  lastLogin?: Date;
+}
+export interface IAuthState {
+  account: IAccount | null;
+  isAuthenticated: boolean;
 }
 
-export interface AuthState {
-  user: User | null;
+export interface IStoreAuth {
+  account: IAccount;
   isAuthenticated: boolean;
   isLoading: boolean;
-  error: string | null;
+  login: (account: IAccount) => void;
+  logout: () => void;
+  setLoading: (loading: boolean) => void;
 }
 
 export interface LoginCredentials {
@@ -32,10 +37,3 @@ export interface RegisterData {
 
 // Re-export form types from local schemas
 export type { LoginFormData, RegisterFormData } from '../schemas';
-
-export interface AuthContextType extends AuthState {
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
-  clearError: () => void;
-}

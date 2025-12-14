@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
 // 👤 Tipos para autenticación
+
+
 export interface User {
   id: string;
   email: string;
@@ -87,7 +89,7 @@ export type AppStore = AppState & AppActions;
 export const useAppStore = create<AppStore>()(
   devtools(
     persist(
-      (set, get) => ({
+      (set) => ({
         // Estado inicial
         user: null,
         isAuthenticated: false,

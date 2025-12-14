@@ -13,53 +13,55 @@
   - width="80%" → 80% del contenedor padre
 */
 
-// ✅ CORRECTO: 50% de la pantalla
-<FormProvider 
-  form={form} 
-  onSubmit={onSubmit}
-  size="half"
-  centered
->
+// import { FormProvider } from "react-hook-form";
 
-// ✅ CORRECTO: 30% de la pantalla
-<FormProvider 
-  form={form} 
-  onSubmit={onSubmit}
-  width="30vw"
-  centered
->
+// // ✅ CORRECTO: 50% de la pantalla
+// <FormProvider 
+//   form={form} 
+//   onSubmit={onSubmit}
+//   size="half"
+//   centered
+// ></FormProvider>
 
-// ✅ CORRECTO: 80% del contenedor padre
-<FormProvider 
-  form={form} 
-  onSubmit={onSubmit}
-  width="80%"
->
+// // ✅ CORRECTO: 30% de la pantalla
+// <FormProvider 
+//   form={form} 
+//   onSubmit={onSubmit}
+//   width="30vw"
+//   centered
+// >
 
-// ✅ CORRECTO: Responsive - diferentes anchos por breakpoint
-<FormProvider 
-  form={form} 
-  onSubmit={onSubmit}
-  width={{ base: "90vw", md: "60vw", lg: "40vw" }}
-  centered
->
+// // ✅ CORRECTO: 80% del contenedor padre
+// <FormProvider 
+//   form={form} 
+//   onSubmit={onSubmit}
+//   width="80%"
+// >
 
-// ✅ CORRECTO: Ancho fijo de 600px
-<FormProvider 
-  form={form} 
-  onSubmit={onSubmit}
-  size="lg"
-  centered
->
+// // ✅ CORRECTO: Responsive - diferentes anchos por breakpoint
+// <FormProvider 
+//   form={form} 
+//   onSubmit={onSubmit}
+//   width={{ base: "90vw", md: "60vw", lg: "40vw" }}
+//   centered
+// >
 
-// ✅ CORRECTO: Ancho personalizado con límite
-<FormProvider 
-  form={form} 
-  onSubmit={onSubmit}
-  width="70vw"
-  maxWidth="800px"
-  centered
->
+// // ✅ CORRECTO: Ancho fijo de 600px
+// <FormProvider 
+//   form={form} 
+//   onSubmit={onSubmit}
+//   size="lg"
+//   centered
+// >
+
+// // ✅ CORRECTO: Ancho personalizado con límite
+// <FormProvider 
+//   form={form} 
+//   onSubmit={onSubmit}
+//   width="70vw"
+//   maxWidth="800px"
+//   centered
+// >
 
 /* 
   TAMAÑOS DISPONIBLES:

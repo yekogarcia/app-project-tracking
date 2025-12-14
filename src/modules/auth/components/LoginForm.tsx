@@ -1,11 +1,14 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Text, Link, Alert } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/app/store/appStore"; // 🎯 Cambiado a Zustand
+import { FiCheckCircle, FiAlertCircle } from "react-icons/fi";
+import { authService } from "../../../services/auth/AuthService";
+
 import { Form, InputField } from "../../../app/components/ui/forms";
 import { loginSchema, type LoginFormData } from "../schemas";
+import { useAuthStore } from "../store/auth.store";
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -13,7 +16,9 @@ interface LoginFormProps {
 
 export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const navigate = useNavigate();
-  const { login, isLoading, error, isAuthenticated } = useAuth(); // 🎯 Zustand hook
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -23,15 +28,24 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     },
   });
 
-  // Redirect to admin dashboard after successful login
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/admin");
-    }
-  }, [isAuthenticated, navigate]);
+  const { login } = useAuthStore();
 
   const onSubmit = async (data: LoginFormData) => {
-    await login(data);
+    setLoading(true);
+    setSuccessMessage(null);
+    setErrorMessage(null);
+
+    const response = await authService.login(data);
+
+    if (response.isAuthenticated) {
+      setSuccessMessage("¡Inicio de sesión exitoso! Redirigiendo...");
+      login(response.user);
+      navigate("/admin");
+    } else {
+      setErrorMessage(response.message);
+    }
+    console.log("Respuesta del servicio de login:", response);
+    setLoading(false);
   };
 
   return (
@@ -45,9 +59,21 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       flexDirection="column"
       gap={4}
     >
-      {error && (
+      {errorMessage && (
         <Alert.Root status="error" borderRadius="md">
-          <Alert.Title>{error}</Alert.Title>
+          <Alert.Indicator>
+            <FiAlertCircle />
+          </Alert.Indicator>
+          <Alert.Title>{errorMessage}</Alert.Title>
+        </Alert.Root>
+      )}
+
+      {successMessage && (
+        <Alert.Root status="success" borderRadius="md">
+          <Alert.Indicator>
+            <FiCheckCircle />
+          </Alert.Indicator>
+          <Alert.Title>{successMessage}</Alert.Title>
         </Alert.Root>
       )}
 
@@ -58,6 +84,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         type="email"
         placeholder="tu@email.com"
         isRequired
+        disabled={loading}
       />
 
       <InputField
@@ -67,14 +94,16 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         type="password"
         placeholder="••••••••"
         isRequired
+        disabled={loading}
       />
 
       <Button
         type="submit"
         colorScheme="blue"
         size={{ base: "md", md: "lg" }}
-        loading={isLoading}
+        loading={loading}
         loadingText="Iniciando sesión..."
+        disabled={loading}
         w="full"
       >
         Iniciar Sesión

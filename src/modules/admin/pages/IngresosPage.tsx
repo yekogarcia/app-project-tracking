@@ -41,14 +41,45 @@ interface Ingreso {
   fecha: string;
   proyectoId: string;
   proyectoNombre: string;
+  subproyectoId?: string;
+  subproyectoNombre?: string;
   estado: "pendiente" | "completado" | "cancelado";
 }
 
+interface Subproyecto {
+  id: string;
+  nombre: string;
+}
+
+interface Proyecto {
+  id: string;
+  nombre: string;
+  subproyectos?: Subproyecto[];
+}
+
 // Mock projects data (should match ProyectosPage)
-const mockProyectos = [
-  { id: "1", nombre: "E-commerce Platform" },
-  { id: "2", nombre: "Mobile App" },
-  { id: "3", nombre: "Dashboard Analytics" },
+const mockProyectos: Proyecto[] = [
+  { 
+    id: "1", 
+    nombre: "E-commerce Platform",
+    subproyectos: [
+      { id: "1-1", nombre: "Frontend" },
+      { id: "1-2", nombre: "Backend API" }
+    ]
+  },
+  { 
+    id: "2", 
+    nombre: "Mobile App",
+    subproyectos: [
+      { id: "2-1", nombre: "iOS App" },
+      { id: "2-2", nombre: "Android App" }
+    ]
+  },
+  { 
+    id: "3", 
+    nombre: "Dashboard Analytics",
+    subproyectos: []
+  },
 ];
 
 const mockIngresos: Ingreso[] = [
@@ -89,12 +120,18 @@ export function IngresosPage() {
     concepto: "",
     monto: "",
     proyectoId: "",
+    subproyectoId: "",
     estado: "pendiente" as const,
   });
+
+  const selectedProyectoData = mockProyectos.find(p => p.id === formData.proyectoId);
 
   const handleSubmit = () => {
     const selectedProject = mockProyectos.find(
       (p) => p.id === formData.proyectoId
+    );
+    const selectedSubproject = selectedProject?.subproyectos?.find(
+      (s) => s.id === formData.subproyectoId
     );
 
     const nuevoIngreso: Ingreso = {
@@ -104,6 +141,8 @@ export function IngresosPage() {
       fecha: new Date().toISOString().split("T")[0],
       proyectoId: formData.proyectoId,
       proyectoNombre: selectedProject?.nombre || "",
+      subproyectoId: formData.subproyectoId || undefined,
+      subproyectoNombre: selectedSubproject?.nombre || undefined,
       estado: formData.estado,
     };
 
@@ -112,6 +151,7 @@ export function IngresosPage() {
       concepto: "",
       monto: "",
       proyectoId: "",
+      subproyectoId: "",
       estado: "pendiente",
     });
     onClose();
@@ -220,12 +260,13 @@ export function IngresosPage() {
                     <NativeSelectRoot>
                       <NativeSelectField
                         value={formData.proyectoId}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setFormData({
                             ...formData,
                             proyectoId: e.target.value,
-                          })
-                        }
+                            subproyectoId: "", // Reset subproject when project changes
+                          });
+                        }}
                       >
                         <option value="">Selecciona un proyecto</option>
                         {mockProyectos.map((proyecto) => (
@@ -236,6 +277,33 @@ export function IngresosPage() {
                       </NativeSelectField>
                     </NativeSelectRoot>
                   </Box>
+
+                  {/* Subproyecto selector - only show if project has subprojects */}
+                  {formData.proyectoId && selectedProyectoData && selectedProyectoData.subproyectos && selectedProyectoData.subproyectos.length > 0 && (
+                    <Box>
+                      <Text fontSize="sm" fontWeight="medium" mb="2">
+                        Subproyecto (Opcional)
+                      </Text>
+                      <NativeSelectRoot>
+                        <NativeSelectField
+                          value={formData.subproyectoId}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              subproyectoId: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Proyecto principal</option>
+                          {selectedProyectoData.subproyectos.map((subproyecto) => (
+                            <option key={subproyecto.id} value={subproyecto.id}>
+                              {subproyecto.nombre}
+                            </option>
+                          ))}
+                        </NativeSelectField>
+                      </NativeSelectRoot>
+                    </Box>
+                  )}
 
                   <Box>
                     <Text fontSize="sm" fontWeight="medium" mb="2">
@@ -335,9 +403,19 @@ export function IngresosPage() {
                   <Text fontWeight="medium" fontSize="lg">
                     {ingreso.concepto}
                   </Text>
-                  <Text color="fg.muted" fontSize="sm">
-                    {ingreso.proyectoNombre}
-                  </Text>
+                  <HStack gap="2">
+                    <Text color="fg.muted" fontSize="sm">
+                      {ingreso.proyectoNombre}
+                    </Text>
+                    {ingreso.subproyectoNombre && (
+                      <>
+                        <Text color="fg.muted" fontSize="sm">→</Text>
+                        <Badge colorScheme="blue" size="sm">
+                          {ingreso.subproyectoNombre}
+                        </Badge>
+                      </>
+                    )}
+                  </HStack>
                   <Text fontSize="sm" color="fg.muted">
                     {new Date(ingreso.fecha).toLocaleDateString()}
                   </Text>

@@ -34,9 +34,22 @@ import {
   FiTrash2, 
   FiFolderPlus,
   FiCalendar,
-  FiDollarSign 
+  FiDollarSign,
+  FiChevronDown,
+  FiChevronRight 
 } from "react-icons/fi";
 import { useState } from "react";
+
+interface Subproyecto {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  progreso: number;
+  presupuesto: number;
+  fechaInicio: string;
+  fechaFin: string;
+  estado: 'activo' | 'completado' | 'pausado' | 'cancelado';
+}
 
 interface Proyecto {
   id: string;
@@ -48,6 +61,7 @@ interface Proyecto {
   fechaFin: string;
   estado: 'activo' | 'completado' | 'pausado' | 'cancelado';
   cliente: string;
+  subproyectos?: Subproyecto[];
 }
 
 const mockProyectos: Proyecto[] = [
@@ -60,7 +74,29 @@ const mockProyectos: Proyecto[] = [
     fechaInicio: '2024-01-01',
     fechaFin: '2024-03-15',
     estado: 'activo',
-    cliente: 'TechCorp'
+    cliente: 'TechCorp',
+    subproyectos: [
+      {
+        id: '1-1',
+        nombre: 'Frontend',
+        descripcion: 'Desarrollo del frontend con React',
+        progreso: 80,
+        presupuesto: 8000,
+        fechaInicio: '2024-01-01',
+        fechaFin: '2024-02-15',
+        estado: 'activo'
+      },
+      {
+        id: '1-2',
+        nombre: 'Backend API',
+        descripcion: 'API REST con Node.js',
+        progreso: 70,
+        presupuesto: 7000,
+        fechaInicio: '2024-01-15',
+        fechaFin: '2024-03-15',
+        estado: 'activo'
+      }
+    ]
   },
   {
     id: '2',
@@ -71,7 +107,29 @@ const mockProyectos: Proyecto[] = [
     fechaInicio: '2024-01-15',
     fechaFin: '2024-04-30',
     estado: 'activo',
-    cliente: 'StartupXYZ'
+    cliente: 'StartupXYZ',
+    subproyectos: [
+      {
+        id: '2-1',
+        nombre: 'iOS App',
+        descripcion: 'Aplicación nativa iOS',
+        progreso: 50,
+        presupuesto: 6000,
+        fechaInicio: '2024-01-15',
+        fechaFin: '2024-03-30',
+        estado: 'activo'
+      },
+      {
+        id: '2-2',
+        nombre: 'Android App',
+        descripcion: 'Aplicación nativa Android',
+        progreso: 40,
+        presupuesto: 6000,
+        fechaInicio: '2024-01-15',
+        fechaFin: '2024-04-30',
+        estado: 'activo'
+      }
+    ]
   },
   {
     id: '3',
@@ -82,13 +140,17 @@ const mockProyectos: Proyecto[] = [
     fechaInicio: '2023-12-01',
     fechaFin: '2024-02-15',
     estado: 'activo',
-    cliente: 'DataCorp'
+    cliente: 'DataCorp',
+    subproyectos: []
   },
 ];
 
 export function ProyectosPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isSubOpen, onOpen: onSubOpen, onClose: onSubClose } = useDisclosure();
   const [proyectos, setProyectos] = useState<Proyecto[]>(mockProyectos);
+  const [selectedProyecto, setSelectedProyecto] = useState<string | null>(null);
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
@@ -96,6 +158,14 @@ export function ProyectosPage() {
     fechaInicio: '',
     fechaFin: '',
     cliente: '',
+    estado: 'activo' as const
+  });
+  const [subFormData, setSubFormData] = useState({
+    nombre: '',
+    descripcion: '',
+    presupuesto: '',
+    fechaInicio: '',
+    fechaFin: '',
     estado: 'activo' as const
   });
 
@@ -109,7 +179,8 @@ export function ProyectosPage() {
       fechaInicio: formData.fechaInicio,
       fechaFin: formData.fechaFin,
       estado: formData.estado,
-      cliente: formData.cliente
+      cliente: formData.cliente,
+      subproyectos: []
     };
 
     setProyectos([nuevoProyecto, ...proyectos]);
@@ -123,6 +194,53 @@ export function ProyectosPage() {
       estado: 'activo' 
     });
     onClose();
+  };
+
+  const handleSubproyectoSubmit = () => {
+    if (!selectedProyecto) return;
+
+    const nuevoSubproyecto: Subproyecto = {
+      id: `${selectedProyecto}-${Date.now()}`,
+      nombre: subFormData.nombre,
+      descripcion: subFormData.descripcion,
+      progreso: 0,
+      presupuesto: parseFloat(subFormData.presupuesto),
+      fechaInicio: subFormData.fechaInicio,
+      fechaFin: subFormData.fechaFin,
+      estado: subFormData.estado
+    };
+
+    setProyectos(proyectos.map(p => {
+      if (p.id === selectedProyecto) {
+        return {
+          ...p,
+          subproyectos: [...(p.subproyectos || []), nuevoSubproyecto]
+        };
+      }
+      return p;
+    }));
+
+    setSubFormData({
+      nombre: '',
+      descripcion: '',
+      presupuesto: '',
+      fechaInicio: '',
+      fechaFin: '',
+      estado: 'activo'
+    });
+    onSubClose();
+  };
+
+  const toggleProjectExpansion = (projectId: string) => {
+    setExpandedProjects(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(projectId)) {
+        newSet.delete(projectId);
+      } else {
+        newSet.add(projectId);
+      }
+      return newSet;
+    });
   };
 
   const getEstadoBadge = (estado: string) => {
@@ -365,6 +483,13 @@ export function ProyectosPage() {
                       </IconButton>
                     </MenuTrigger>
                     <MenuContent>
+                      <MenuItem value="add-sub" onClick={() => {
+                        setSelectedProyecto(proyecto.id);
+                        onSubOpen();
+                      }}>
+                        <FiPlus />
+                        Agregar Subproyecto
+                      </MenuItem>
                       <MenuItem value="edit">
                         <FiEdit />
                         Editar
@@ -426,10 +551,166 @@ export function ProyectosPage() {
                   </Text>
                   {getEstadoBadge(proyecto.estado)}
                 </HStack>
+
+                {/* Subproyectos Section */}
+                {proyecto.subproyectos && proyecto.subproyectos.length > 0 && (
+                  <Box 
+                    borderTopWidth="1px" 
+                    borderColor="border.subtle" 
+                    pt="3"
+                  >
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => toggleProjectExpansion(proyecto.id)}
+                      width="full"
+                      justifyContent="space-between"
+                    >
+                      <HStack>
+                        <FiFolderPlus size="14" />
+                        <Text fontSize="sm">
+                          Subproyectos ({proyecto.subproyectos.length})
+                        </Text>
+                      </HStack>
+                      {expandedProjects.has(proyecto.id) ? <FiChevronDown /> : <FiChevronRight />}
+                    </Button>
+
+                    {expandedProjects.has(proyecto.id) && (
+                      <VStack align="stretch" gap="2" mt="2">
+                        {proyecto.subproyectos.map((sub) => (
+                          <Box
+                            key={sub.id}
+                            bg={{ base: "gray.50", _dark: "gray.700" }}
+                            borderRadius="md"
+                            p="3"
+                          >
+                            <VStack align="stretch" gap="2">
+                              <HStack justify="space-between">
+                                <Text fontSize="sm" fontWeight="medium">
+                                  {sub.nombre}
+                                </Text>
+                                {getEstadoBadge(sub.estado)}
+                              </HStack>
+                              <Text fontSize="xs" color="fg.muted" lineClamp={1}>
+                                {sub.descripcion}
+                              </Text>
+                              <HStack justify="space-between">
+                                <Text fontSize="xs" color="fg.muted">
+                                  Progreso: {sub.progreso}%
+                                </Text>
+                                <Text fontSize="xs" fontWeight="bold" color="green.500">
+                                  ${sub.presupuesto.toLocaleString()}
+                                </Text>
+                              </HStack>
+                            </VStack>
+                          </Box>
+                        ))}
+                      </VStack>
+                    )}
+                  </Box>
+                )}
               </VStack>
             </Box>
           ))}
         </Grid>
+
+        {/* Dialog para crear subproyecto */}
+        <DialogRoot open={isSubOpen} onOpenChange={({ open }) => open ? onSubOpen() : onSubClose()}>
+          <DialogContent maxW="lg">
+            <DialogHeader>
+              <DialogTitle>Nuevo Subproyecto</DialogTitle>
+              <DialogCloseTrigger />
+            </DialogHeader>
+            <DialogBody>
+              <VStack gap="4">
+                <Box>
+                  <Text fontSize="sm" fontWeight="medium" mb="2">
+                    Nombre del Subproyecto
+                  </Text>
+                  <Input
+                    value={subFormData.nombre}
+                    onChange={(e) => setSubFormData({...subFormData, nombre: e.target.value})}
+                    placeholder="Nombre del subproyecto"
+                  />
+                </Box>
+                
+                <Box>
+                  <Text fontSize="sm" fontWeight="medium" mb="2">
+                    Descripción
+                  </Text>
+                  <Textarea
+                    value={subFormData.descripcion}
+                    onChange={(e) => setSubFormData({...subFormData, descripcion: e.target.value})}
+                    placeholder="Descripción del subproyecto"
+                    rows={3}
+                  />
+                </Box>
+
+                <Box>
+                  <Text fontSize="sm" fontWeight="medium" mb="2">
+                    Presupuesto
+                  </Text>
+                  <Input
+                    type="number"
+                    value={subFormData.presupuesto}
+                    onChange={(e) => setSubFormData({...subFormData, presupuesto: e.target.value})}
+                    placeholder="0.00"
+                  />
+                </Box>
+
+                <Grid templateColumns="1fr 1fr" gap="4" w="full">
+                  <Box>
+                    <Text fontSize="sm" fontWeight="medium" mb="2">
+                      Fecha de Inicio
+                    </Text>
+                    <Input
+                      type="date"
+                      value={subFormData.fechaInicio}
+                      onChange={(e) => setSubFormData({...subFormData, fechaInicio: e.target.value})}
+                    />
+                  </Box>
+                  
+                  <Box>
+                    <Text fontSize="sm" fontWeight="medium" mb="2">
+                      Fecha de Fin
+                    </Text>
+                    <Input
+                      type="date"
+                      value={subFormData.fechaFin}
+                      onChange={(e) => setSubFormData({...subFormData, fechaFin: e.target.value})}
+                    />
+                  </Box>
+                </Grid>
+                
+                <Box>
+                  <Text fontSize="sm" fontWeight="medium" mb="2">
+                    Estado
+                  </Text>
+                  <NativeSelectRoot>
+                    <NativeSelectField
+                      value={subFormData.estado}
+                      onChange={(e) => setSubFormData({...subFormData, estado: e.target.value as any})}
+                    >
+                      <option value="activo">Activo</option>
+                      <option value="pausado">Pausado</option>
+                      <option value="completado">Completado</option>
+                      <option value="cancelado">Cancelado</option>
+                    </NativeSelectField>
+                  </NativeSelectRoot>
+                </Box>
+              </VStack>
+            </DialogBody>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={onSubClose}>
+                Cancelar
+              </Button>
+              <Button colorScheme="blue" onClick={handleSubproyectoSubmit}>
+                Crear Subproyecto
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </DialogRoot>
       </VStack>
   );
 }

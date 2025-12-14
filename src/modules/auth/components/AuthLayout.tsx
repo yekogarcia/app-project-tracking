@@ -4,10 +4,9 @@ import {
   VStack,
   Heading,
   Text,
-  HStack,
   Flex,
 } from "@chakra-ui/react";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { ThemeToggle } from "../../../app/components/ui/ThemeToggle";
 
 interface AuthLayoutProps {

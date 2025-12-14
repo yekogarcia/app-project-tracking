@@ -4,8 +4,6 @@ import { useBreakpoint } from "../../hooks/useBreakpoint";
 import { MobileNavigation } from "../navigation/MobileNavigation";
 import { DesktopSidebar } from "../navigation/DesktopSidebar";
 import { TopBar } from "../navigation/TopBar";
-import { ThemeDebug } from "../ui/ThemeDebug";
-import { BreakpointDebug } from "../ui/BreakpointDebug";
 import { type NavigationItem } from "../../types";
 import { 
   FiHome, 

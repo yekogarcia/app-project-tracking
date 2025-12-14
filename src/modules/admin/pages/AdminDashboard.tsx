@@ -7,6 +7,7 @@ import {
   Icon,
   HStack,
   VStack,
+  Badge,
 } from "@chakra-ui/react";
 
 import { BreakpointDebug } from "../../../app/components/ui/BreakpointDebug";
@@ -14,7 +15,8 @@ import {
   FiTrendingUp, 
   FiTrendingDown, 
   FiFolderPlus,
-  FiDollarSign 
+  FiDollarSign,
+  FiLayers 
 } from "react-icons/fi";
 
 export function AdminDashboard() {
@@ -112,7 +114,7 @@ export function AdminDashboard() {
                 <Box>
                   <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>Proyectos Activos</Text>
                   <Text fontSize="2xl" fontWeight="bold" color={{ base: "gray.900", _dark: "white" }}>
-                    12
+                    3
                   </Text>
                   <Text fontSize="sm" color="blue.500">
                     ↗ 2 nuevos
@@ -130,6 +132,45 @@ export function AdminDashboard() {
             </Box>
           </GridItem>
 
+          <GridItem>
+            <Box
+              bg={{ base: "white", _dark: "gray.800" }}
+              borderRadius="lg"
+              borderWidth="1px"
+              borderColor={{ base: "gray.200", _dark: "gray.700" }}
+              p="6"
+            >
+              <HStack justify="space-between" align="start">
+                <Box>
+                  <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>Subproyectos</Text>
+                  <Text fontSize="2xl" fontWeight="bold" color={{ base: "gray.900", _dark: "white" }}>
+                    4
+                  </Text>
+                  <Text fontSize="sm" color="orange.500">
+                    En 2 proyectos
+                  </Text>
+                </Box>
+                <Icon 
+                  as={FiLayers} 
+                  boxSize="8" 
+                  color="orange.500" 
+                  bg={{ base: "orange.50", _dark: "orange.900" }}
+                  p="2" 
+                  borderRadius="md"
+                />
+              </HStack>
+            </Box>
+          </GridItem>
+        </Grid>
+
+        {/* Second Row Stats */}
+        <Grid
+          templateColumns={{
+            base: "1fr",
+            sm: "repeat(2, 1fr)",
+          }}
+          gap="6"
+        >
           <GridItem>
             <Box
               bg={{ base: "white", _dark: "gray.800" }}
@@ -216,21 +257,52 @@ export function AdminDashboard() {
               </Heading>
               <VStack gap="3" align="stretch">
                 <Box>
-                  <Text fontWeight="medium" color={{ base: "gray.900", _dark: "white" }}>E-commerce Platform</Text>
-                  <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                    Progreso: 75%
-                  </Text>
+                  <HStack justify="space-between">
+                    <Text fontWeight="medium" color={{ base: "gray.900", _dark: "white" }}>E-commerce Platform</Text>
+                    <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>75%</Text>
+                  </HStack>
+                  <VStack align="stretch" gap="1" mt="2" pl="3" borderLeftWidth="2px" borderColor="blue.500">
+                    <HStack justify="space-between">
+                      <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
+                        <Badge colorScheme="blue" size="sm">Frontend</Badge>
+                      </Text>
+                      <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.500" }}>80%</Text>
+                    </HStack>
+                    <HStack justify="space-between">
+                      <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
+                        <Badge colorScheme="blue" size="sm">Backend API</Badge>
+                      </Text>
+                      <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.500" }}>70%</Text>
+                    </HStack>
+                  </VStack>
                 </Box>
                 <Box>
-                  <Text fontWeight="medium" color={{ base: "gray.900", _dark: "white" }}>Mobile App</Text>
-                  <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                    Progreso: 45%
-                  </Text>
+                  <HStack justify="space-between">
+                    <Text fontWeight="medium" color={{ base: "gray.900", _dark: "white" }}>Mobile App</Text>
+                    <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>45%</Text>
+                  </HStack>
+                  <VStack align="stretch" gap="1" mt="2" pl="3" borderLeftWidth="2px" borderColor="blue.500">
+                    <HStack justify="space-between">
+                      <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
+                        <Badge colorScheme="blue" size="sm">iOS App</Badge>
+                      </Text>
+                      <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.500" }}>50%</Text>
+                    </HStack>
+                    <HStack justify="space-between">
+                      <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
+                        <Badge colorScheme="blue" size="sm">Android App</Badge>
+                      </Text>
+                      <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.500" }}>40%</Text>
+                    </HStack>
+                  </VStack>
                 </Box>
                 <Box>
-                  <Text fontWeight="medium" color={{ base: "gray.900", _dark: "white" }}>Dashboard Analytics</Text>
-                  <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                    Progreso: 90%
+                  <HStack justify="space-between">
+                    <Text fontWeight="medium" color={{ base: "gray.900", _dark: "white" }}>Dashboard Analytics</Text>
+                    <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>90%</Text>
+                  </HStack>
+                  <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }} mt="1">
+                    Sin subproyectos
                   </Text>
                 </Box>
               </VStack>
