@@ -6,23 +6,28 @@ import {
   type FieldValues,
 } from "react-hook-form";
 
-interface InputFieldProps<T extends FieldValues = FieldValues>
+interface DateFieldProps<T extends FieldValues = FieldValues>
   extends Omit<InputProps, "name"> {
   name: FieldPath<T>;
   control: Control<T>;
   label?: string;
   helperText?: string;
   isRequired?: boolean;
+  /** min and max accept date strings in YYYY-MM-DD format */
+  min?: string;
+  max?: string;
 }
 
-export function InputField<T extends FieldValues = FieldValues>({
+export function DateField<T extends FieldValues = FieldValues>({
   name,
   control,
   label,
   helperText,
   isRequired,
+  min,
+  max,
   ...inputProps
-}: InputFieldProps<T>) {
+}: DateFieldProps<T>) {
   const {
     field,
     fieldState: { error, invalid },
@@ -31,9 +36,8 @@ export function InputField<T extends FieldValues = FieldValues>({
     control,
   });
 
-  // console.log("control", control);
-  // console.log("inputProps", inputProps);
-  // field.onChange(event);
+  // Ensure value is a string (HTML date input expects YYYY-MM-DD or empty string)
+  const value = field.value ?? "";
 
   return (
     <Field.Root invalid={invalid} required={isRequired}>
@@ -41,6 +45,10 @@ export function InputField<T extends FieldValues = FieldValues>({
       <Input
         {...field}
         {...inputProps}
+        type="date"
+        value={value}
+        min={min}
+        max={max}
         outline="none"
         size={{ base: "md", md: "lg" }}
         borderColor={{ base: "gray.300", _dark: "gray.600" }}
@@ -60,3 +68,5 @@ export function InputField<T extends FieldValues = FieldValues>({
     </Field.Root>
   );
 }
+
+export default DateField;

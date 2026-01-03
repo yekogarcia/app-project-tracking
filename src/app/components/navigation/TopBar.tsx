@@ -13,7 +13,7 @@ import {
 import { FiMenu, FiUser, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "../ui/ThemeToggle";
-import { useAuth } from "@/app/store/appStore"; // 🎯 Cambiado a Zustand
+import { useAuthStore } from "@/modules/auth/store/auth.store";
 
 interface TopBarProps {
   onMenuClick?: () => void;
@@ -22,7 +22,7 @@ interface TopBarProps {
 
 export function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { account, logout } = useAuthStore();
 
   const handleLogout = () => {
     logout();
@@ -77,14 +77,14 @@ export function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
                     fontSize="sm"
                     fontWeight="bold"
                   >
-                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    {account?.name?.charAt(0).toUpperCase() || 'U'}
                   </Box>
                   <Box display={{ base: "none", md: "block" }} textAlign="left">
                     <Text fontSize="sm" fontWeight="medium">
-                      {user?.name || 'Usuario'}
+                      {account?.name || 'Usuario'}
                     </Text>
                     <Text fontSize="xs" color="fg.muted">
-                      {user?.email || ''}
+                      {account?.email || ''}
                     </Text>
                   </Box>
                 </HStack>

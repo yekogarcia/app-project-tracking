@@ -3,7 +3,7 @@ export interface IAccount {
   name: string;
   email: string;
   role: string;
-  company_id: number;
+  company: any;
   avatar?: string;
 }
 export interface IAuthState {
@@ -15,9 +15,11 @@ export interface IStoreAuth {
   account: IAccount;
   isAuthenticated: boolean;
   isLoading: boolean;
+  sessionStarted: boolean;
   login: (account: IAccount) => void;
   logout: () => void;
   setLoading: (loading: boolean) => void;
+  setSessionStarted: (started: boolean) => void;
 }
 
 export interface LoginCredentials {

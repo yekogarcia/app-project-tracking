@@ -52,59 +52,61 @@ export function NumberField<T extends FieldValues = FieldValues>({
 
   // Formatear valor para mostrar
   const formatDisplayValue = (value: number | string | undefined): string => {
-    if (value === undefined || value === null || value === '') return '';
-    
-    const numValue = typeof value === 'string' ? parseFloat(value) : value;
-    if (isNaN(numValue)) return '';
-    
+    if (value === undefined || value === null || value === "") return "";
+
+    const numValue = typeof value === "string" ? parseFloat(value) : value;
+    if (isNaN(numValue)) return "";
+
     // Formatear con decimales si está permitido
-    const formattedNumber = allowDecimals 
-      ? numValue.toFixed(decimalPlaces).replace(/\.?0+$/, '') 
+    const formattedNumber = allowDecimals
+      ? numValue.toFixed(decimalPlaces).replace(/\.?0+$/, "")
       : Math.floor(numValue).toString();
-    
+
     // Agregar prefijo y sufijo
     let displayValue = formattedNumber;
     if (prefix) displayValue = prefix + displayValue;
     if (suffix) displayValue = displayValue + suffix;
-    
+
     return displayValue;
   };
 
   // Parsear valor de entrada
   const parseInputValue = (inputValue: string): number | undefined => {
-    if (!inputValue || inputValue.trim() === '') return undefined;
-    
+    if (!inputValue || inputValue.trim() === "") return undefined;
+
     // Remover prefijo y sufijo
     let cleanValue = inputValue;
-    if (prefix) cleanValue = cleanValue.replace(prefix, '');
-    if (suffix) cleanValue = cleanValue.replace(suffix, '');
-    
+    if (prefix) cleanValue = cleanValue.replace(prefix, "");
+    if (suffix) cleanValue = cleanValue.replace(suffix, "");
+
     // Limpiar caracteres no numéricos (excepto punto decimal y signo negativo)
-    cleanValue = cleanValue.replace(/[^\d.-]/g, '');
-    
-    const numValue = allowDecimals ? parseFloat(cleanValue) : parseInt(cleanValue, 10);
-    
+    cleanValue = cleanValue.replace(/[^\d.-]/g, "");
+
+    const numValue = allowDecimals
+      ? parseFloat(cleanValue)
+      : parseInt(cleanValue, 10);
+
     if (isNaN(numValue)) return undefined;
-    
+
     // Aplicar límites
     let finalValue = numValue;
     if (min !== undefined && finalValue < min) finalValue = min;
     if (max !== undefined && finalValue > max) finalValue = max;
-    
+
     return finalValue;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     const numericValue = parseInputValue(inputValue);
-    
+
     // Actualizar el campo con el valor numérico
     field.onChange(numericValue);
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     field.onBlur();
-    
+
     // Formatear el valor al perder el foco
     const currentValue = field.value;
     if (currentValue !== undefined && currentValue !== null) {
@@ -131,6 +133,7 @@ export function NumberField<T extends FieldValues = FieldValues>({
         onChange={handleInputChange}
         onBlur={handleBlur}
         placeholder={placeholder}
+        outline="none"
         size={{ base: "md", md: "lg" }}
         borderColor={{ base: "gray.300", _dark: "gray.600" }}
         _hover={{
@@ -152,7 +155,7 @@ export function NumberField<T extends FieldValues = FieldValues>({
 
 // Variantes específicas del NumberField
 export function CurrencyField<T extends FieldValues = FieldValues>(
-  props: Omit<NumberFieldProps<T>, 'prefix' | 'allowDecimals' | 'decimalPlaces'>
+  props: Omit<NumberFieldProps<T>, "prefix" | "allowDecimals" | "decimalPlaces">
 ) {
   return (
     <NumberField
@@ -166,21 +169,15 @@ export function CurrencyField<T extends FieldValues = FieldValues>(
 }
 
 export function PercentageField<T extends FieldValues = FieldValues>(
-  props: Omit<NumberFieldProps<T>, 'suffix' | 'min' | 'max'>
+  props: Omit<NumberFieldProps<T>, "suffix" | "min" | "max">
 ) {
   return (
-    <NumberField
-      {...props}
-      suffix="%"
-      min={0}
-      max={100}
-      placeholder="0"
-    />
+    <NumberField {...props} suffix="%" min={0} max={100} placeholder="0" />
   );
 }
 
 export function IntegerField<T extends FieldValues = FieldValues>(
-  props: Omit<NumberFieldProps<T>, 'allowDecimals' | 'decimalPlaces'>
+  props: Omit<NumberFieldProps<T>, "allowDecimals" | "decimalPlaces">
 ) {
   return (
     <NumberField

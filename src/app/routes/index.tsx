@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../../App";
-import { ProyectosPage } from "../../modules/admin/pages/ProyectosPage";
+import { ProyectosPage } from "../../modules/projects/pages/ProyectosPage";
 import { AdminDashboard } from "@/modules/admin/pages/AdminDashboard";
 import { ProfilePage } from "@/modules/admin/pages/ProfilePage";
 import { IngresosPage } from "@/modules/admin/pages/IngresosPage";

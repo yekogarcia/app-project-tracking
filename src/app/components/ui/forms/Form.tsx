@@ -3,6 +3,7 @@ import {
   FormProvider,
   type UseFormReturn,
   type FieldValues,
+  type SubmitHandler,
 } from "react-hook-form";
 import { Box, type BoxProps } from "@chakra-ui/react";
 
@@ -33,7 +34,7 @@ export type FormSize = keyof typeof FORM_SIZES;
 interface FormProviderProps<T extends FieldValues = FieldValues>
   extends Omit<BoxProps, "onSubmit"> {
   form: UseFormReturn<T>;
-  onSubmit: (data: T) => void | Promise<void>;
+  onSubmit: SubmitHandler<T>;
   children: ReactNode;
   /** Tamaño predefinido del formulario */
   size?: FormSize;

@@ -13,7 +13,11 @@ export function ProtectedRoute({
   children,
   requiredRole,
 }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading, account } = useAuthStore();
+  const {
+    isAuthenticated,
+    isLoading,
+    account,
+  } = useAuthStore();
 
   // Show loading spinner while checking authentication
   if (isLoading) {
@@ -31,28 +35,9 @@ export function ProtectedRoute({
       </Box>
     );
   }
-
-  // Show loading spinner while checking authentication
-  // if (isAuthenticated) {
-  //   return (
-  //     <Box
-  //       minH="100vh"
-  //       display="flex"
-  //       alignItems="center"
-  //       justifyContent="center"
-  //       bg={{ base: 'gray.50', _dark: 'gray.900' }}
-  //     >
-  //       <VStack gap={4}>
-  //         <Spinner size="xl" color="blue.500" />
-  //       </VStack>
-  //     </Box>
-  //   );
-  // }
-
+  
   // Redirect to login if not authenticated
-
-  if (!isAuthenticated) {
-    console.log("Entra");
+  if (!isAuthenticated || account.id === 0) {
     return <Navigate to="/login" replace />;
   }
 

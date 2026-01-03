@@ -17,14 +17,15 @@ class AuthService {
                 credentials: 'include',
                 body: JSON.stringify(credentials)
             });
-            const data = await response.json();
+            const resp = await response.json();
+            console.log(resp);
 
-            if (data.statusCode === 200) {
+
+            if (resp.statusCode === 200) {
                 return {
                     isAuthenticated: true,
                     message: 'Login successful',
-                    token: data.accessToken,
-                    user: data.user
+                    user: resp.data.user
                 };
             }
 
@@ -47,15 +48,13 @@ class AuthService {
                 },
                 credentials: 'include',
             });
-            const data = await response.json();
-            console.log(data);
-            
-            if (data.statusCode === 200) {
+            const resp = await response.json();
+
+            if (resp.statusCode === 200) {
                 return {
                     isAuthenticated: true,
                     message: 'Login successful',
-                    token: data.accessToken,
-                    user: data.user
+                    user: resp.data.user
                 };
             }
             return {
@@ -64,6 +63,22 @@ class AuthService {
             };
         } catch (error) {
             throw new Error(error instanceof Error ? error.message : 'Unknown error during session validation');
+        }
+    }
+
+    async logout() {
+        try {
+            const response = await fetch(`${this.apiUrl}/auth/logout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            });
+            const resp = await response.json();
+            return resp;
+        } catch (error) {
+            throw new Error(error instanceof Error ? error.message : 'Unknown error during logout');
         }
     }
 }

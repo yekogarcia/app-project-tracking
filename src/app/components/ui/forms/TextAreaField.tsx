@@ -1,4 +1,4 @@
-import { Input, Field, type InputProps } from "@chakra-ui/react";
+import { Textarea, Field, type TextareaProps } from "@chakra-ui/react";
 import {
   useController,
   type Control,
@@ -6,8 +6,8 @@ import {
   type FieldValues,
 } from "react-hook-form";
 
-interface InputFieldProps<T extends FieldValues = FieldValues>
-  extends Omit<InputProps, "name"> {
+interface TextAreaFieldProps<T extends FieldValues = FieldValues>
+  extends Omit<TextareaProps, "name"> {
   name: FieldPath<T>;
   control: Control<T>;
   label?: string;
@@ -15,14 +15,14 @@ interface InputFieldProps<T extends FieldValues = FieldValues>
   isRequired?: boolean;
 }
 
-export function InputField<T extends FieldValues = FieldValues>({
+export function TextAreaField<T extends FieldValues = FieldValues>({
   name,
   control,
   label,
   helperText,
   isRequired,
-  ...inputProps
-}: InputFieldProps<T>) {
+  ...textareaProps
+}: TextAreaFieldProps<T>) {
   const {
     field,
     fieldState: { error, invalid },
@@ -31,16 +31,12 @@ export function InputField<T extends FieldValues = FieldValues>({
     control,
   });
 
-  // console.log("control", control);
-  // console.log("inputProps", inputProps);
-  // field.onChange(event);
-
   return (
     <Field.Root invalid={invalid} required={isRequired}>
       {label && <Field.Label>{label}</Field.Label>}
-      <Input
+      <Textarea
         {...field}
-        {...inputProps}
+        {...textareaProps}
         outline="none"
         size={{ base: "md", md: "lg" }}
         borderColor={{ base: "gray.300", _dark: "gray.600" }}
@@ -52,6 +48,8 @@ export function InputField<T extends FieldValues = FieldValues>({
           boxShadow: "0 0 0 1px #3182ce",
         }}
         bg={{ base: "white", _dark: "gray.700" }}
+        resize="vertical"
+        minHeight="100px"
       />
       {error && <Field.ErrorText>{error.message}</Field.ErrorText>}
       {helperText && !error && (

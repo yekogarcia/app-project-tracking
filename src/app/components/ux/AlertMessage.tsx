@@ -1,0 +1,61 @@
+import { Alert, Stack } from "@chakra-ui/react";
+
+export type StatusType =
+  | "info"
+  | "warning"
+  | "success"
+  | "error"
+  | "neutral";
+
+  interface IPropsAlert {
+     status: StatusType;
+     message: string;
+    }
+
+export const AlertMessage = ({status, message}: IPropsAlert) => {
+
+    return (
+        (status && message) ? (
+            <Stack gap="4" width="full">
+                <Alert.Root status={status}>
+                    <Alert.Indicator />
+                    <Alert.Title>{message}</Alert.Title>
+                </Alert.Root>
+            </Stack>
+        ) : null
+    );
+};
+
+
+// import { Alert as ChakraAlert } from "@chakra-ui/react"
+// import * as React from "react"
+
+// export interface AlertProps extends Omit<ChakraAlert.RootProps, "title"> {
+//   startElement?: React.ReactNode
+//   endElement?: React.ReactNode
+//   title?: React.ReactNode
+//   icon?: React.ReactElement
+// }
+
+// export const AlertClosedComponent = React.forwardRef<
+//   HTMLDivElement,
+//   AlertProps
+// >(function Alert(props, ref) {
+//   const { title, children, icon, startElement, endElement, ...rest } = props
+//   return (
+//     <ChakraAlert.Root ref={ref} {...rest}>
+//       {startElement || <ChakraAlert.Indicator>{icon}</ChakraAlert.Indicator>}
+//       {children ? (
+//         <ChakraAlert.Content>
+//           <ChakraAlert.Title>{title}</ChakraAlert.Title>
+//           <ChakraAlert.Description>{children}</ChakraAlert.Description>
+//         </ChakraAlert.Content>
+//       ) : (
+//         <ChakraAlert.Title flex="1">{title}</ChakraAlert.Title>
+//       )}
+//       {endElement}
+//     </ChakraAlert.Root>
+//   )
+// })
+
+

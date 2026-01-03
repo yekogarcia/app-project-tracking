@@ -49,6 +49,7 @@ export function SelectField<T extends FieldValues = FieldValues>({
       >
         <NativeSelectField
           value={value || ''}
+          outline="none"
           onChange={(e: any) => onChange(e.target.value)}
           onBlur={onBlur}
           borderColor={{ base: "gray.300", _dark: "gray.600" }}

@@ -10,7 +10,8 @@ export const useFetch = async (path: string, options: RequestInit = {}) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
                 ...(options.headers || {})
-            }
+            },
+             credentials: 'include',
         });
 
         const data = await response.json();

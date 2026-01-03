@@ -6,19 +6,21 @@ const valuesAuthStore = {
   name: '',
   email: '',
   role: '',
-  company_id: 0
+  company: {}
 };
 
 export const useAuthStore = create<IStoreAuth>((set) => ({
   account: valuesAuthStore,
   isAuthenticated: false,
-  isLoading: true, // 🔥 Inicia en true para esperar la validación
+  isLoading: true,
+  sessionStarted: false,
   login: (account: IAccount) =>
     set(() => (
       {
         account: { ...valuesAuthStore, ...account },
         isAuthenticated: true,
-        isLoading: false
+        isLoading: false,
+        sessionStarted: true
       }
     )),
   logout: () => set(() => ({ 
@@ -26,5 +28,6 @@ export const useAuthStore = create<IStoreAuth>((set) => ({
     isAuthenticated: false,
     isLoading: false 
   })),
-  setLoading: (loading: boolean) => set(() => ({ isLoading: loading }))
+  setLoading: (loading: boolean) => set(() => ({ isLoading: loading })),
+  setSessionStarted: (started: boolean) => set(() => ({ sessionStarted:   started }))
 }));
