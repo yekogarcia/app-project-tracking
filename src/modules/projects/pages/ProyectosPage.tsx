@@ -7,17 +7,6 @@ import {
   Badge,
   HStack,
   VStack,
-  DialogRoot,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogBody,
-  DialogFooter,
-  DialogCloseTrigger,
-  Input,
-  Textarea,
-  NativeSelectRoot,
-  NativeSelectField,
   IconButton,
   MenuRoot,
   MenuTrigger,
@@ -25,20 +14,22 @@ import {
   MenuItem,
 } from "@chakra-ui/react";
 
-import { useDisclosure } from "../../../app/hooks/useDisclosure";
+// import { useDisclosure } from "../../../app/hooks/useDisclosure";
 import {
-  FiPlus,
   FiMoreVertical,
   FiEdit,
   FiTrash2,
   FiFolderPlus,
   FiCalendar,
-  FiDollarSign,
   FiChevronDown,
   FiChevronRight,
 } from "react-icons/fi";
-import { useState } from "react";
+import { Toaster } from "@/app/components/ux/toaster";
+
+import { useEffect, useState } from "react";
 import FormProjects from "../components/FormProjects";
+import { projectsService } from "@/services/projects/ProjectsService";
+import { formatDateShort, showToaster } from "@/app/utils/utils";
 
 interface Subproyecto {
   id: string;
@@ -51,195 +42,63 @@ interface Subproyecto {
   estado: "activo" | "completado" | "pausado" | "cancelado";
 }
 
-interface Proyecto {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  progreso: number;
-  presupuesto: number;
-  fechaInicio: string;
-  fechaFin: string;
-  estado: "activo" | "completado" | "pausado" | "cancelado";
-  cliente: string;
+interface Projects {
+  id: number;
+  name: string;
+  description: string;
+  type: "PROJECT" | "SUBPROJECT";
+  startDate: string;
+  endDate: string;
+  status: "ACTIVE" | "SUSPENDED" | "RUNNING" | "CANCELED" | "COMPLETED";
+  parentId?: number;
+  parentName: string;
   subproyectos?: Subproyecto[];
 }
 
-const mockProyectos: Proyecto[] = [
-  {
-    id: "1",
-    nombre: "E-commerce Platform",
-    descripcion: "Desarrollo de plataforma de comercio electrónico completa",
-    progreso: 75,
-    presupuesto: 15000,
-    fechaInicio: "2024-01-01",
-    fechaFin: "2024-03-15",
-    estado: "activo",
-    cliente: "TechCorp",
-    subproyectos: [
-      {
-        id: "1-1",
-        nombre: "Frontend",
-        descripcion: "Desarrollo del frontend con React",
-        progreso: 80,
-        presupuesto: 8000,
-        fechaInicio: "2024-01-01",
-        fechaFin: "2024-02-15",
-        estado: "activo",
-      },
-      {
-        id: "1-2",
-        nombre: "Backend API",
-        descripcion: "API REST con Node.js",
-        progreso: 70,
-        presupuesto: 7000,
-        fechaInicio: "2024-01-15",
-        fechaFin: "2024-03-15",
-        estado: "activo",
-      },
-    ],
-  },
-  {
-    id: "2",
-    nombre: "Mobile App",
-    descripcion: "Aplicación móvil para iOS y Android",
-    progreso: 45,
-    presupuesto: 12000,
-    fechaInicio: "2024-01-15",
-    fechaFin: "2024-04-30",
-    estado: "activo",
-    cliente: "StartupXYZ",
-    subproyectos: [
-      {
-        id: "2-1",
-        nombre: "iOS App",
-        descripcion: "Aplicación nativa iOS",
-        progreso: 50,
-        presupuesto: 6000,
-        fechaInicio: "2024-01-15",
-        fechaFin: "2024-03-30",
-        estado: "activo",
-      },
-      {
-        id: "2-2",
-        nombre: "Android App",
-        descripcion: "Aplicación nativa Android",
-        progreso: 40,
-        presupuesto: 6000,
-        fechaInicio: "2024-01-15",
-        fechaFin: "2024-04-30",
-        estado: "activo",
-      },
-    ],
-  },
-  {
-    id: "3",
-    nombre: "Dashboard Analytics",
-    descripcion: "Dashboard de análisis y reportes en tiempo real",
-    progreso: 90,
-    presupuesto: 8000,
-    fechaInicio: "2023-12-01",
-    fechaFin: "2024-02-15",
-    estado: "activo",
-    cliente: "DataCorp",
-    subproyectos: [],
-  },
-];
+const formDefaultsValues = {
+  type: "PROJECT",
+  parentId: undefined,
+  name: "",
+  status: "ACTIVE",
+  description: "",
+  startDate: "",
+  endDate: "",
+};
 
 export function ProyectosPage() {
-  // const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    isOpen: isSubOpen,
-    onOpen: onSubOpen,
-    onClose: onSubClose,
-  } = useDisclosure();
-  const [proyectos, setProyectos] = useState<Proyecto[]>(mockProyectos);
-  const [selectedProyecto, setSelectedProyecto] = useState<string | null>(null);
-  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(
+  const [projects, setProjects] = useState<Projects[]>([]);
+  // const [selectedProyecto, setSelectedProyecto] = useState<string | null>(null);
+  const [expandedProjects, setExpandedProjects] = useState<Set<number>>(
     new Set()
   );
-  // const [formData, setFormData] = useState({
-  //   nombre: '',
-  //   descripcion: '',
-  //   presupuesto: '',
-  //   fechaInicio: '',
-  //   fechaFin: '',
-  //   cliente: '',
-  //   estado: 'activo' as const
-  // });
-  const [subFormData, setSubFormData] = useState({
-    nombre: "",
-    descripcion: "",
-    presupuesto: "",
-    fechaInicio: "",
-    fechaFin: "",
-    estado: "activo" as const,
-  });
+  const [totals, setTotals] = useState<any>(null);
+  const [open, setOpen] = useState(false);
+  const [formDefaults, setFormDefaults] = useState<any>(formDefaultsValues);
 
-  // const handleSubmit = () => {
-  //   const nuevoProyecto: Proyecto = {
-  //     id: Date.now().toString(),
-  //     nombre: formData.nombre,
-  //     descripcion: formData.descripcion,
-  //     progreso: 0,
-  //     presupuesto: parseFloat(formData.presupuesto),
-  //     fechaInicio: formData.fechaInicio,
-  //     fechaFin: formData.fechaFin,
-  //     estado: formData.estado,
-  //     cliente: formData.cliente,
-  //     subproyectos: []
-  //   };
+  const [formMode, setFormMode] = useState<"create" | "edit">("create");
 
-  //   setProyectos([nuevoProyecto, ...proyectos]);
-  //   setFormData({
-  //     nombre: '',
-  //     descripcion: '',
-  //     presupuesto: '',
-  //     fechaInicio: '',
-  //     fechaFin: '',
-  //     cliente: '',
-  //     estado: 'activo'
-  //   });
-  //   onClose();
-  // };
+  useEffect(() => {
+    refreshDashboard();
+  }, []);
 
-  const handleSubproyectoSubmit = () => {
-    if (!selectedProyecto) return;
-
-    const nuevoSubproyecto: Subproyecto = {
-      id: `${selectedProyecto}-${Date.now()}`,
-      nombre: subFormData.nombre,
-      descripcion: subFormData.descripcion,
-      progreso: 0,
-      presupuesto: parseFloat(subFormData.presupuesto),
-      fechaInicio: subFormData.fechaInicio,
-      fechaFin: subFormData.fechaFin,
-      estado: subFormData.estado,
-    };
-
-    setProyectos(
-      proyectos.map((p) => {
-        if (p.id === selectedProyecto) {
-          return {
-            ...p,
-            subproyectos: [...(p.subproyectos || []), nuevoSubproyecto],
-          };
-        }
-        return p;
-      })
-    );
-
-    setSubFormData({
-      nombre: "",
-      descripcion: "",
-      presupuesto: "",
-      fechaInicio: "",
-      fechaFin: "",
-      estado: "activo",
-    });
-    onSubClose();
+  const refreshDashboard = () => {
+    totalsProjects();
+    getProjects();
   };
 
-  const toggleProjectExpansion = (projectId: string) => {
+  const totalsProjects = async () => {
+    const totalsProjects = await projectsService.getTotalProjects();
+    setTotals(totalsProjects.data);
+  };
+
+  const getProjects = async () => {
+    const projects = await projectsService.getAllProjects();
+    console.log(projects);
+    
+    setProjects(projects.data);
+  };
+
+  const toggleProjectExpansion = (projectId: number) => {
     setExpandedProjects((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(projectId)) {
@@ -253,36 +112,40 @@ export function ProyectosPage() {
 
   const getEstadoBadge = (estado: string) => {
     const colors = {
-      activo: "blue",
-      completado: "green",
-      pausado: "yellow",
-      cancelado: "red",
+      ACTIVE: "blue",
+      COMPLETED: "green",
+      RUNNING: "yellow",
+      SUSPENDED: "gray",
+      CANCELLED: "red",
     };
     return (
-      <Badge colorScheme={colors[estado as keyof typeof colors]}>
+      <Badge colorPalette={colors[estado as keyof typeof colors]}>
+        {/* <Badge colorPalette="blue"> */}
         {estado}
       </Badge>
     );
   };
 
-  const getProgressColor = (progreso: number) => {
-    if (progreso >= 80) return "green";
-    if (progreso >= 50) return "blue";
-    if (progreso >= 25) return "yellow";
-    return "red";
+  const deleteProjectById = async (projectId: number) => {
+    const resp = await projectsService.deleteProject(projectId);
+    if (resp.statusCode === 200) {
+      showToaster({
+        type: "success",
+        description: "Proyecto eliminado exitosamente",
+      });
+    } else {
+      showToaster({
+        type: "warning",
+        description: resp.message || "No se pudo eliminar el proyecto",
+      });
+    }
+    await refreshDashboard();
   };
-
-  const totalPresupuesto = proyectos.reduce(
-    (sum, proyecto) => sum + proyecto.presupuesto,
-    0
-  );
-  const proyectosActivos = proyectos.filter(
-    (p) => p.estado === "activo"
-  ).length;
 
   return (
     <VStack gap="6" align="stretch">
       {/* Header */}
+      <Toaster />
       <HStack justify="space-between" align="start">
         <Box>
           <Heading size="lg" color="fg.emphasized">
@@ -292,32 +155,51 @@ export function ProyectosPage() {
             Gestiona todos tus proyectos y su progreso
           </Text>
         </Box>
-        <FormProjects />
+        <Button
+          colorScheme="blue"
+          onClick={() => {
+            // prepare create defaults and open dialog clean
+            setFormDefaults(formDefaultsValues);
+            setFormMode("create");
+            setOpen(true);
+          }}
+        >
+          <FiFolderPlus style={{ marginRight: 8 }} />
+          Nuevo Proyecto
+        </Button>
+        <FormProjects
+          defaultValues={formDefaults}
+          mode={formMode}
+          open={open}
+          setOpen={setOpen}
+          refreshDashboard={refreshDashboard}
+        />
       </HStack>
 
       {/* Stats */}
       <Grid
+        // Columns adaptativas, tarjetas más compactas (min width 180px)
         templateColumns={{
           base: "1fr",
-          md: "repeat(3, 1fr)",
+          md: "repeat(auto-fit, minmax(180px, 1fr))",
         }}
-        gap="6"
+        gap="4"
       >
         <Box
           bg="bg.panel"
           borderRadius="lg"
           borderWidth="1px"
           borderColor="border.subtle"
-          p="6"
+          p="4"
         >
           <HStack>
-            <FiFolderPlus size="24" color="blue" />
+            <FiFolderPlus size="18" color="blue" />
             <VStack align="start" gap="0">
-              <Text fontSize="sm" color="fg.muted">
+              <Text fontSize="xs" fontWeight="bold" color="fg.muted">
                 Total Proyectos
               </Text>
-              <Text fontSize="2xl" fontWeight="bold">
-                {proyectos.length}
+              <Text fontSize="xl" fontWeight="bold">
+                {totals?.TOTAL || 0}
               </Text>
             </VStack>
           </HStack>
@@ -328,16 +210,16 @@ export function ProyectosPage() {
           borderRadius="lg"
           borderWidth="1px"
           borderColor="border.subtle"
-          p="6"
+          p="4"
         >
           <HStack>
-            <FiCalendar size="24" color="green" />
+            <FiCalendar size="18" color="blue" />
             <VStack align="start" gap="0">
-              <Text fontSize="sm" color="fg.muted">
-                Proyectos Activos
+              <Text fontSize="xs" fontWeight="bold" color="fg.muted">
+                Activos
               </Text>
-              <Text fontSize="2xl" fontWeight="bold" color="green.500">
-                {proyectosActivos}
+              <Text fontSize="xl" fontWeight="bold" color="blue.500">
+                {totals?.ACTIVE || 0}
               </Text>
             </VStack>
           </HStack>
@@ -348,44 +230,127 @@ export function ProyectosPage() {
           borderRadius="lg"
           borderWidth="1px"
           borderColor="border.subtle"
-          p="6"
+          p="4"
         >
           <HStack>
-            <FiDollarSign size="24" color="purple" />
+            <FiCalendar size="18" color="orange" />
             <VStack align="start" gap="0">
-              <Text fontSize="sm" color="fg.muted">
+              <Text fontSize="xs" fontWeight="bold" color="fg.muted">
+                En ejecución
+              </Text>
+              <Text fontSize="xl" fontWeight="bold" color="orange.500">
+                {totals?.RUNNING || 0}
+              </Text>
+            </VStack>
+          </HStack>
+        </Box>
+
+        <Box
+          bg="bg.panel"
+          borderRadius="lg"
+          borderWidth="1px"
+          borderColor="border.subtle"
+          p="4"
+        >
+          <HStack>
+            <FiCalendar size="18" color="gray" />
+            <VStack align="start" gap="0">
+              <Text fontSize="xs" fontWeight="bold" color="fg.muted">
+                Suspendidos
+              </Text>
+              <Text fontSize="xl" fontWeight="bold" color="gray.500">
+                {totals?.SUSPENDED || 0}
+              </Text>
+            </VStack>
+          </HStack>
+        </Box>
+
+        <Box
+          bg="bg.panel"
+          borderRadius="lg"
+          borderWidth="1px"
+          borderColor="border.subtle"
+          p="4"
+        >
+          <HStack>
+            <FiCalendar size="24" color="red" />
+            <VStack align="start" gap="0">
+              <Text fontSize="xs" fontWeight="bold" color="fg.muted">
+                Cancelados
+              </Text>
+              <Text fontSize="xl" fontWeight="bold" color="red.500">
+                {totals?.CANCELLED || 0}
+              </Text>
+            </VStack>
+          </HStack>
+        </Box>
+        <Box
+          bg="bg.panel"
+          borderRadius="lg"
+          borderWidth="1px"
+          borderColor="border.subtle"
+          p="4"
+        >
+          <HStack>
+            <FiCalendar size="18" color="green" />
+            <VStack align="start" gap="0">
+              <Text fontSize="xs" fontWeight="bold" color="fg.muted">
+                Completados
+              </Text>
+              <Text fontSize="xl" fontWeight="bold" color="green.500">
+                {totals?.COMPLETED || 0}
+              </Text>
+            </VStack>
+          </HStack>
+        </Box>
+
+        {/* <Box
+          bg="bg.panel"
+          borderRadius="lg"
+          borderWidth="1px"
+          borderColor="border.subtle"
+          p="4"
+        >
+          <HStack>
+            <FiDollarSign size="18" color="purple" />
+            <VStack align="start" gap="0">
+              <Text fontSize="xs" fontWeight="bold" color="fg.muted">
                 Presupuesto Total
               </Text>
-              <Text fontSize="2xl" fontWeight="bold" color="purple.500">
+              <Text fontSize="xl" fontWeight="bold" color="purple.500">
                 ${totalPresupuesto.toLocaleString()}
               </Text>
             </VStack>
           </HStack>
-        </Box>
+        </Box> */}
       </Grid>
 
       {/* Projects Grid */}
       <Grid
+        // Use auto-fit to adjust number of columns automatically and keep cards compact
         templateColumns={{
           base: "1fr",
-          md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
+          md: "repeat(auto-fit, minmax(220px, 1fr))",
         }}
-        gap="6"
+        //  templateColumns={{
+        //   base: "1fr",
+        //   md: "repeat(auto-fit, minmax(180px, 1fr))",
+        // }}
+        gap="4"
       >
-        {proyectos.map((proyecto) => (
+        {projects.map((project) => (
           <Box
-            key={proyecto.id}
+            key={project.id}
             bg="bg.panel"
             borderRadius="lg"
             borderWidth="1px"
             borderColor="border.subtle"
-            p="6"
+            p="4"
           >
             <VStack align="stretch" gap="4">
               <HStack justify="space-between">
-                <Heading size="md" lineClamp={1}>
-                  {proyecto.nombre}
+                <Heading size="sm" lineClamp={1}>
+                  {project.name}
                 </Heading>
                 <MenuRoot>
                   <MenuTrigger asChild>
@@ -395,20 +360,54 @@ export function ProyectosPage() {
                   </MenuTrigger>
                   <MenuContent>
                     <MenuItem
-                      value="add-sub"
+                      value="edit"
                       onClick={() => {
-                        setSelectedProyecto(proyecto.id);
-                        onSubOpen();
+                        // ensure dates are provided in YYYY-MM-DD format for input[type=date]
+                        const formatDate = (d: any) => {
+                          try {
+                            if (!d) return "";
+                            const dt = new Date(d);
+                            if (isNaN(dt.getTime())) return "";
+                            return dt.toISOString().slice(0, 10);
+                          } catch (e) {
+                            return "";
+                          }
+                        };
+
+                        setFormDefaults({
+                          id: project.id,
+                          type: project.type || "PROJECT",
+                          parentId: project.parentId || undefined,
+                          name: project.name,
+                          status: project.status,
+                          description: project.description,
+                          startDate: formatDate(project.startDate),
+                          endDate: formatDate(project.endDate),
+                        });
+                        setFormMode("edit");
+                        setOpen(true);
                       }}
                     >
-                      <FiPlus />
-                      Agregar Subproyecto
-                    </MenuItem>
-                    <MenuItem value="edit">
                       <FiEdit />
                       Editar
                     </MenuItem>
-                    <MenuItem value="delete" color="fg.error">
+                    <MenuItem
+                      value="delete"
+                      color="fg.error"
+                      onClick={() => {
+                        // Implement delete functionality here
+                        console.log("Delete project", project.id);
+                        if (project.status == "ACTIVE") {
+                          deleteProjectById(project.id);
+                        } else {
+                          showToaster({
+                            type: "warning",
+                            description:
+                              "El proyecto se puede eliminar solo en estado ACTIVE",
+                          });
+                        }
+                      }}
+                    >
                       <FiTrash2 />
                       Eliminar
                     </MenuItem>
@@ -416,89 +415,63 @@ export function ProyectosPage() {
                 </MenuRoot>
               </HStack>
 
-              <Text fontSize="sm" color="fg.muted" lineClamp={2}>
-                {proyecto.descripcion}
+              <Text fontSize="xs" color="fg.muted" lineClamp={2}>
+                {project.description}
               </Text>
-
-              <VStack align="stretch" gap="2">
-                <HStack justify="space-between">
-                  <Text fontSize="sm" fontWeight="medium">
-                    Progreso
-                  </Text>
-                  <Text fontSize="sm" fontWeight="bold">
-                    {proyecto.progreso}%
-                  </Text>
-                </HStack>
-                <Box
-                  w="full"
-                  bg="gray.200"
-                  borderRadius="full"
-                  h="2"
-                  overflow="hidden"
-                >
-                  <Box
-                    h="full"
-                    bg={`${getProgressColor(proyecto.progreso)}.500`}
-                    w={`${proyecto.progreso}%`}
-                    borderRadius="full"
-                    transition="width 0.3s"
-                  />
-                </Box>
-              </VStack>
 
               <HStack justify="space-between">
                 <VStack align="start" gap="0">
                   <Text fontSize="xs" color="fg.muted">
-                    Cliente
+                    Tipo
                   </Text>
                   <Text fontSize="sm" fontWeight="medium">
-                    {proyecto.cliente}
+                    {project.type}
                   </Text>
                 </VStack>
                 <VStack align="end" gap="0">
                   <Text fontSize="xs" color="fg.muted">
-                    Presupuesto
+                    Proyecto principal:
                   </Text>
                   <Text fontSize="sm" fontWeight="bold" color="green.500">
-                    ${proyecto.presupuesto.toLocaleString()}
+                    {project.parentName ? project.parentName : "N/A"}
                   </Text>
                 </VStack>
               </HStack>
 
               <HStack justify="space-between">
-                <Text fontSize="xs" color="fg.muted">
-                  {new Date(proyecto.fechaInicio).toLocaleDateString()} -{" "}
-                  {new Date(proyecto.fechaFin).toLocaleDateString()}
+                <Text fontSize="xx-small" color="fg.muted">
+                  {formatDateShort(project.startDate)}
+                  {project?.endDate ? ` - ${formatDateShort(project.endDate)}` : ""}
                 </Text>
-                {getEstadoBadge(proyecto.estado)}
+                {getEstadoBadge(project.status)}
               </HStack>
 
               {/* Subproyectos Section */}
-              {proyecto.subproyectos && proyecto.subproyectos.length > 0 && (
+              {project.subproyectos && project.subproyectos.length > 0 && (
                 <Box borderTopWidth="1px" borderColor="border.subtle" pt="3">
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => toggleProjectExpansion(proyecto.id)}
+                    onClick={() => toggleProjectExpansion(project.id)}
                     width="full"
                     justifyContent="space-between"
                   >
                     <HStack>
-                      <FiFolderPlus size="14" />
-                      <Text fontSize="sm">
-                        Subproyectos ({proyecto.subproyectos.length})
+                      <FiFolderPlus size="12" />
+                      <Text fontSize="xs">
+                        Subproyectos ({project.subproyectos.length})
                       </Text>
                     </HStack>
-                    {expandedProjects.has(proyecto.id) ? (
+                    {expandedProjects.has(project.id) ? (
                       <FiChevronDown />
                     ) : (
                       <FiChevronRight />
                     )}
                   </Button>
 
-                  {expandedProjects.has(proyecto.id) && (
+                  {expandedProjects.has(project.id) && (
                     <VStack align="stretch" gap="2" mt="2">
-                      {proyecto.subproyectos.map((sub) => (
+                      {project.subproyectos.map((sub) => (
                         <Box
                           key={sub.id}
                           bg={{ base: "gray.50", _dark: "gray.700" }}
@@ -538,134 +511,6 @@ export function ProyectosPage() {
           </Box>
         ))}
       </Grid>
-
-      {/* Dialog para crear subproyecto */}
-      <DialogRoot
-        open={isSubOpen}
-        onOpenChange={({ open }) => (open ? onSubOpen() : onSubClose())}
-      >
-        <DialogContent maxW="lg">
-          <DialogHeader>
-            <DialogTitle>Nuevo Subproyecto</DialogTitle>
-            <DialogCloseTrigger />
-          </DialogHeader>
-          <DialogBody>
-            <VStack gap="4">
-              <Box>
-                <Text fontSize="sm" fontWeight="medium" mb="2">
-                  Nombre del Subproyecto
-                </Text>
-                <Input
-                  value={subFormData.nombre}
-                  onChange={(e) =>
-                    setSubFormData({ ...subFormData, nombre: e.target.value })
-                  }
-                  placeholder="Nombre del subproyecto"
-                />
-              </Box>
-
-              <Box>
-                <Text fontSize="sm" fontWeight="medium" mb="2">
-                  Descripción
-                </Text>
-                <Textarea
-                  value={subFormData.descripcion}
-                  onChange={(e) =>
-                    setSubFormData({
-                      ...subFormData,
-                      descripcion: e.target.value,
-                    })
-                  }
-                  placeholder="Descripción del subproyecto"
-                  rows={3}
-                />
-              </Box>
-
-              <Box>
-                <Text fontSize="sm" fontWeight="medium" mb="2">
-                  Presupuesto
-                </Text>
-                <Input
-                  type="number"
-                  value={subFormData.presupuesto}
-                  onChange={(e) =>
-                    setSubFormData({
-                      ...subFormData,
-                      presupuesto: e.target.value,
-                    })
-                  }
-                  placeholder="0.00"
-                />
-              </Box>
-
-              <Grid templateColumns="1fr 1fr" gap="4" w="full">
-                <Box>
-                  <Text fontSize="sm" fontWeight="medium" mb="2">
-                    Fecha de Inicio
-                  </Text>
-                  <Input
-                    type="date"
-                    value={subFormData.fechaInicio}
-                    onChange={(e) =>
-                      setSubFormData({
-                        ...subFormData,
-                        fechaInicio: e.target.value,
-                      })
-                    }
-                  />
-                </Box>
-
-                <Box>
-                  <Text fontSize="sm" fontWeight="medium" mb="2">
-                    Fecha de Fin
-                  </Text>
-                  <Input
-                    type="date"
-                    value={subFormData.fechaFin}
-                    onChange={(e) =>
-                      setSubFormData({
-                        ...subFormData,
-                        fechaFin: e.target.value,
-                      })
-                    }
-                  />
-                </Box>
-              </Grid>
-
-              <Box>
-                <Text fontSize="sm" fontWeight="medium" mb="2">
-                  Estado
-                </Text>
-                <NativeSelectRoot>
-                  <NativeSelectField
-                    value={subFormData.estado}
-                    onChange={(e) =>
-                      setSubFormData({
-                        ...subFormData,
-                        estado: e.target.value as any,
-                      })
-                    }
-                  >
-                    <option value="activo">Activo</option>
-                    <option value="pausado">Pausado</option>
-                    <option value="completado">Completado</option>
-                    <option value="cancelado">Cancelado</option>
-                  </NativeSelectField>
-                </NativeSelectRoot>
-              </Box>
-            </VStack>
-          </DialogBody>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={onSubClose}>
-              Cancelar
-            </Button>
-            <Button colorScheme="blue" onClick={handleSubproyectoSubmit}>
-              Crear Subproyecto
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </DialogRoot>
     </VStack>
   );
 }

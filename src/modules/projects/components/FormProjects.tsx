@@ -14,9 +14,9 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useState } from "react";
+import { useState, type Dispatch, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { FiPlus } from "react-icons/fi";
+// import { FiPlus } from "react-icons/fi";
 // import { createToaster } from "@chakra-ui/react";
 import { Toaster, toaster } from "@/app/components/ux/toaster";
 
@@ -27,48 +27,60 @@ import {
 // import { ProjectsService } from "@/services/projects/ProjectsService";
 
 import { projectsService } from "@/services/projects/ProjectsService";
-import { useAuthStore } from "@/modules/auth/store/auth.store";
+// import { useAuthStore } from "@/modules/auth/store/auth.store";
 
 interface IFormProps {
   defaultValues?: Partial<ProjectsFormData>;
   /** 📝 Modo del formulario: 'create' | 'edit' */
   mode?: "create" | "edit";
+  open: boolean;
+  setOpen: Dispatch<React.SetStateAction<boolean>>;
+  refreshDashboard: () => void;
+  /** Mostrar el botón trigger interno (por defecto true). Si el trigger se coloca en el padre, pasar false */
 }
 
 const FormProjects = ({
-  defaultValues: propDefaultValues,
+  defaultValues,
   mode = "create",
+  open,
+  setOpen,
+  refreshDashboard
 }: IFormProps) => {
   //   const { onClose } = useDisclosure();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [type, setType] = useState<"PROJECT" | "SUBPROJECT" | "">("PROJECT");
   const [projects, setProjects] = useState<any[]>([]);
-  const [open, setOpen] = useState(false);
   const [required, setRequired] = useState(false);
 
-  const { account } = useAuthStore();
-
-  const baseDefaultValues: Partial<ProjectsFormData> = {
-    type: "PROJECT",
-    parentId: undefined,
-    name: "",
-    status: "ACTIVE",
-    description: "",
-  };
-
-  // 🔄 Mergear valores por defecto base con los proporcionados
-  const mergedDefaultValues = useMemo(
-    () => ({
-      ...baseDefaultValues,
-      ...propDefaultValues,
-    }),
-    [propDefaultValues]
-  );
+  // const { account } = useAuthStore();
 
   const form = useForm<ProjectsFormData>({
     resolver: zodResolver(projectsSchema),
-    defaultValues: mergedDefaultValues,
+    defaultValues: defaultValues,
   });
+
+  // When defaultValues change (e.g. edit action), reset the form to load values
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset(defaultValues as any);
+      // set local UI state (type / required) based on incoming values
+      if ((defaultValues as any).type) {
+        setType((defaultValues as any).type as any);
+        setRequired(((defaultValues as any).type as any) === "SUBPROJECT");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues]);
+
+  // If dialog opens in create mode, ensure form is reset to the create defaults
+  useEffect(() => {
+    if (open && mode === "create") {
+      form.reset(defaultValues as any);
+      setType((defaultValues as any)?.type ?? "PROJECT");
+      setRequired(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, mode]);
 
   const onChangeType = async () => {
     const values = form.getValues();
@@ -95,16 +107,11 @@ const FormProjects = ({
   };
 
   const handleSubmit = async (data: any) => {
-    data.companyId = account.company.id;
-    data.userId = account.id;
-    setIsSubmitting(true);
-
     console.log(data);
-    
-
-    const response = await projectsService.saveProject(data);
-    console.log(response);
-    
+    console.log(defaultValues);
+    delete data.id; 
+    setIsSubmitting(true);
+    const response = await projectsService.saveProject(data, defaultValues?.id);
     if (response.statusCode === 200) {
       showToaster({
         type: "success",
@@ -121,6 +128,7 @@ const FormProjects = ({
         duration: 6000,
       });
     }
+    refreshDashboard()
     setIsSubmitting(false);
   };
 
@@ -138,14 +146,12 @@ const FormProjects = ({
       <Dialog.Root
         size={{ md: "lg" }}
         open={open}
-        onOpenChange={(e) => setOpen(e.open)}
+        // onOpenChange may provide an object or boolean depending on the dialog implementation
+        onOpenChange={(details: any) => {
+          const next = typeof details === "boolean" ? details : details?.open;
+          setOpen(Boolean(next));
+        }}
       >
-        <Dialog.Trigger asChild>
-          <Button colorScheme="blue">
-            <FiPlus />
-            Nuevo Proyecto
-          </Button>
-        </Dialog.Trigger>
         <Portal>
           <Toaster />
           <Dialog.Backdrop />
@@ -261,11 +267,9 @@ const FormProjects = ({
                       gap={8}
                       paddingTop={8}
                     >
-                      <Dialog.ActionTrigger asChild>
-                        <Button size="lg" variant="outline">
-                          Cancelar
-                        </Button>
-                      </Dialog.ActionTrigger>
+                      <Button size="lg" variant="outline" onClick={() => setOpen(false)}>
+                        Cancelar
+                      </Button>
                       <Button
                         type="submit"
                         colorScheme="blue"

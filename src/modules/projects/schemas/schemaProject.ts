@@ -16,6 +16,7 @@ export const descriptionSchema = z.string()
 
 export const projectsSchema = z
     .object({
+        id: z.number().optional(),
         type: projectTypeSchema,
         parentId: z.string().optional(),
         name: nameSchema,
