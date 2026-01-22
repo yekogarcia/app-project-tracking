@@ -30,19 +30,19 @@ const adminMenuItems: NavigationItem[] = [
     id: 'proyectos',
     label: 'Proyectos',
     icon: <FiFolderPlus />,
-    path: '/admin/proyectos',
+    path: '/admin/projects',
   },
   {
     id: 'egresos',
     label: 'Egresos',
     icon: <FiTrendingDown />,
-    path: '/admin/egresos',
+    path: '/admin/expenses',
   },
   {
     id: 'ingresos',
     label: 'Ingresos',
     icon: <FiTrendingUp />,
-    path: '/admin/ingresos',
+    path: '/admin/incomes',
   },
   {
     id: 'profile',

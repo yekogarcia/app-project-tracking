@@ -45,7 +45,7 @@ export function SelectField<T extends FieldValues = FieldValues>({
       {label && <Field.Label>{label}</Field.Label>}
       <NativeSelectRoot
         {...selectProps}
-        size={{ base: 'md', md: 'lg' }}
+        size={{ base: 'md', md: 'md' }}
       >
         <NativeSelectField
           value={value || ''}

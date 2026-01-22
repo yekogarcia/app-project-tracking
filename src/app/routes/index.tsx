@@ -1,13 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../../App";
-import { ProyectosPage } from "../../modules/projects/pages/ProyectosPage";
+import { ProjectsPage } from "../../modules/projects/pages/ProjectsPage";
 import { AdminDashboard } from "@/modules/admin/pages/AdminDashboard";
 import { ProfilePage } from "@/modules/admin/pages/ProfilePage";
 import { IngresosPage } from "@/modules/admin/pages/IngresosPage";
-import { EgresosPage } from "@/modules/admin/pages/EgresosPage";
 import { LoginPage } from "@/modules/auth/pages/LoginPage";
 import { ProtectedRoute } from "@/app/components/auth/ProtectedRoute";
 import { ResponsiveLayout } from "@/app/components/layout/ResponsiveLayout";
+import { ExpensesPage } from "@/modules/expenses/pages/ExpensesPage";
 
 
 export const router = createBrowserRouter([
@@ -50,7 +50,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/admin/ingresos",
+        path: "/admin/incomes",
         element: (
           <ProtectedRoute requiredRole="ADMIN">
             <ResponsiveLayout>
@@ -60,21 +60,21 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/admin/egresos",
+        path: "/admin/expenses",
         element: (
           <ProtectedRoute requiredRole="ADMIN">
             <ResponsiveLayout>
-              <EgresosPage />
+              <ExpensesPage />
             </ResponsiveLayout>
           </ProtectedRoute>
         ),
       },
       {
-        path: "/admin/proyectos",
+        path: "/admin/projects",
         element: (
           <ProtectedRoute requiredRole="ADMIN">
             <ResponsiveLayout>
-              <ProyectosPage />
+              <ProjectsPage />
             </ResponsiveLayout>
           </ProtectedRoute>
         ),

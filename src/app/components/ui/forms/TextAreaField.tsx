@@ -38,7 +38,7 @@ export function TextAreaField<T extends FieldValues = FieldValues>({
         {...field}
         {...textareaProps}
         outline="none"
-        size={{ base: "md", md: "lg" }}
+        size={{ base: "md", md: "md" }}
         borderColor={{ base: "gray.300", _dark: "gray.600" }}
         _hover={{
           borderColor: { base: "gray.400", _dark: "gray.500" },

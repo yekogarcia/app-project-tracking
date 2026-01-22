@@ -65,7 +65,7 @@ const formDefaultsValues = {
   endDate: "",
 };
 
-export function ProyectosPage() {
+export function ProjectsPage() {
   const [projects, setProjects] = useState<Projects[]>([]);
   // const [selectedProyecto, setSelectedProyecto] = useState<string | null>(null);
   const [expandedProjects, setExpandedProjects] = useState<Set<number>>(
@@ -190,6 +190,7 @@ export function ProyectosPage() {
           borderRadius="lg"
           borderWidth="1px"
           borderColor="border.subtle"
+          boxShadow="sm"
           p="4"
         >
           <HStack>
@@ -210,6 +211,7 @@ export function ProyectosPage() {
           borderRadius="lg"
           borderWidth="1px"
           borderColor="border.subtle"
+          boxShadow="sm"
           p="4"
         >
           <HStack>
@@ -230,6 +232,7 @@ export function ProyectosPage() {
           borderRadius="lg"
           borderWidth="1px"
           borderColor="border.subtle"
+          boxShadow="sm"
           p="4"
         >
           <HStack>
@@ -250,6 +253,7 @@ export function ProyectosPage() {
           borderRadius="lg"
           borderWidth="1px"
           borderColor="border.subtle"
+          boxShadow="sm"
           p="4"
         >
           <HStack>
@@ -270,6 +274,7 @@ export function ProyectosPage() {
           borderRadius="lg"
           borderWidth="1px"
           borderColor="border.subtle"
+          boxShadow="sm"
           p="4"
         >
           <HStack>
@@ -289,6 +294,7 @@ export function ProyectosPage() {
           borderRadius="lg"
           borderWidth="1px"
           borderColor="border.subtle"
+          boxShadow="sm"
           p="4"
         >
           <HStack>
@@ -345,6 +351,7 @@ export function ProyectosPage() {
             borderRadius="lg"
             borderWidth="1px"
             borderColor="border.subtle"
+            boxShadow="sm"
             p="4"
           >
             <VStack align="stretch" gap="4">
