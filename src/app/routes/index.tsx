@@ -3,11 +3,11 @@ import App from "../../App";
 import { ProjectsPage } from "../../modules/projects/pages/ProjectsPage";
 import { AdminDashboard } from "@/modules/admin/pages/AdminDashboard";
 import { ProfilePage } from "@/modules/admin/pages/ProfilePage";
-import { IngresosPage } from "@/modules/admin/pages/IngresosPage";
 import { LoginPage } from "@/modules/auth/pages/LoginPage";
 import { ProtectedRoute } from "@/app/components/auth/ProtectedRoute";
 import { ResponsiveLayout } from "@/app/components/layout/ResponsiveLayout";
 import { ExpensesPage } from "@/modules/expenses/pages/ExpensesPage";
+import { IncomesPage } from "@/modules/incomes/pages/IncomesPage";
 
 
 export const router = createBrowserRouter([
@@ -54,7 +54,7 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredRole="ADMIN">
             <ResponsiveLayout>
-              <IngresosPage />
+              <IncomesPage />
             </ResponsiveLayout>
           </ProtectedRoute>
         ),

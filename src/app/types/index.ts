@@ -42,3 +42,9 @@ export type RegisterData = {
   password: string;
   confirmPassword: string;
 };
+
+export interface ISelect {
+   key: number;
+   value: number;
+   label: string;
+};

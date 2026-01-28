@@ -18,7 +18,7 @@ export const projectsSchema = z
     .object({
         id: z.number().optional(),
         type: projectTypeSchema,
-        parentId: z.string().optional(),
+        parentId: z.number().optional(),
         name: nameSchema,
         status: statusSchema,
         startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {

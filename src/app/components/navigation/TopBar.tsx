@@ -37,9 +37,18 @@ export function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
     <Box
       bg="bg.surface"
       borderBottomWidth="1px"
-      borderColor="border.subtle"
+      // borderColor="border.muted"
+      // borderColor="gray.700"
+      boxShadow="xs"
       px={{ base: 4, md: 6 }}
       py="3"
+      _light={{
+        borderColor: "gray.200",
+        // boxShadow: "inset -1px 0 0 rgba(0,0,0,0.04)",
+      }}
+      _dark={{
+        borderColor: "gray.700",
+      }}
     >
       <Flex justify="space-between" align="center">
         {/* Left side - Menu button for mobile */}
@@ -77,14 +86,14 @@ export function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
                     fontSize="sm"
                     fontWeight="bold"
                   >
-                    {account?.name?.charAt(0).toUpperCase() || 'U'}
+                    {account?.name?.charAt(0).toUpperCase() || "U"}
                   </Box>
                   <Box display={{ base: "none", md: "block" }} textAlign="left">
                     <Text fontSize="sm" fontWeight="medium">
-                      {account?.name || 'Usuario'}
+                      {account?.name || "Usuario"}
                     </Text>
                     <Text fontSize="xs" color="fg.muted">
-                      {account?.email || ''}
+                      {account?.email || ""}
                     </Text>
                   </Box>
                 </HStack>

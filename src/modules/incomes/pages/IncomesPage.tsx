@@ -15,20 +15,14 @@ import {
   MenuItem,
 } from "@chakra-ui/react";
 
-import {
-  FiMoreVertical,
-  FiEdit,
-  FiTrash2,
-  FiTrendingDown,
-} from "react-icons/fi";
+import { FiMoreVertical, FiEdit, FiTrash2, FiTrendingUp } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import { FormExpenses } from "../components/FormExpenses";
-import { expensesService } from "@/services/expenses/ExpensesService";
-// import type { GiReturnArrow } from "react-icons/gi";
 import { IoMdAdd } from "react-icons/io";
 import { formatDate, formatNumber, showToaster } from "@/app/utils/utils";
 import { projectsService } from "@/services/projects/ProjectsService";
 import type { ISelect } from "@/app";
+import { FormIncomes } from "../components/FormIncomes";
+import { incomesService } from "@/services/incomes/IncomesServices";
 
 const formDefaultsValues = {
   typeExpense: "COSTO",
@@ -41,8 +35,8 @@ const formDefaultsValues = {
   projectId: undefined,
 };
 
-export function ExpensesPage() {
-  const [expenses, setExpenses] = useState<any[]>([]);
+export function IncomesPage() {
+  const [incomes, setIncomes] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [formDefaults, setFormDefaults] = useState<any>(formDefaultsValues);
@@ -50,44 +44,44 @@ export function ExpensesPage() {
   const [projects, setProjects] = useState<ISelect[]>([]);
 
   useEffect(() => {
-    getAllExpenses();
+    getAllIncomes();
     getProjects();
   }, []);
 
   const refreshDashboard = () => {
-    getAllExpenses();
+    getAllIncomes();
   };
 
-  const getAllExpenses = async () => {
-    const resp = await expensesService.getExpenses();
-    if (resp.statusCode !== 200) {
+  const getAllIncomes = async () => {
+    const resp = await incomesService.getIncomes();
+    if (resp.statusCode === 200) {
+      setIncomes(resp.data);
+    } else {
       showToaster({
         type: "warning",
-        description: resp.message || "No se pudo cargar los egresos",
+        description: resp.message || "No se pudo cargar los ingresos",
       });
-    } else {
-      setExpenses(resp.data);
     }
   };
 
-  const transformData = (exp: any) => {
+  const transformData = (income: any) => {
     return {
-      id: exp.id,
-      projectId: exp.project_id,
-      typeExpense: exp.type_expense,
-      type: exp.type,
-      concept: exp.concept,
-      expense: exp.expense,
-      price: parseFloat(exp.price),
-      quantity: exp.quantity,
-      totalPrice: parseFloat(exp.total_price),
-      expenseDate: formatDate(exp.expense_date),
-      description: exp.description,
+      id: income.id,
+      projectId: income.project_id,
+      type: income.type,
+      incomeName: income.income_name,
+      incomeValue: parseFloat(income.income_value),
+      paymentMethod: income.payment_method,
+      referenceNumber: income.reference_number,
+      incomeDate: formatDate(income.income_date),
+      description: income.description,
     };
   };
 
-  const deleteExpenseById = async (id: any) => {
-    const resp = await expensesService.deleteExpense(id);
+  const deleteIncomeById = async (id: any) => {
+    const resp = await incomesService.deleteIncome(id);
+    console.log(resp);
+
     if (resp.statusCode === 200) {
       showToaster({
         type: "success",
@@ -118,12 +112,13 @@ export function ExpensesPage() {
   };
 
   // Filter egresos by selected project
-  const filteredExpenses = selectedProject
-    ? expenses.filter((expense) => expense.project_id == selectedProject)
-    : expenses;
+  const filteredIncomes = selectedProject
+    ? incomes.filter((income) => income.project_id == selectedProject)
+    : incomes;
 
-  const totalEgresos = filteredExpenses.reduce(
-    (sum, expense) => sum + parseFloat(expense.total_price),
+
+  const totalIncomes = filteredIncomes.reduce(
+    (sum, income) => sum + parseFloat(income.income_value),
     0,
   );
 
@@ -132,10 +127,10 @@ export function ExpensesPage() {
       <HStack flexWrap="wrap" justify="space-between" align="start">
         <Box>
           <Heading size="lg" color="fg.emphasized">
-            Egresos
+            Ingresos
           </Heading>
           <Text color="fg.muted" mt="1">
-            Controla todos los gastos y egresos del proyecto
+            Gestiona todos los ingresos de tus proyectos
           </Text>
         </Box>
         <HStack gap="3">
@@ -164,11 +159,11 @@ export function ExpensesPage() {
                 }}
               >
                 <IoMdAdd style={{ marginRight: 8 }} />
-                Nuevo egreso
+                Nuevo Ingreso
               </Button>
             </NativeSelectRoot>
           </Box>
-          <FormExpenses
+          <FormIncomes
             defaultValues={formDefaults}
             mode={formMode}
             open={open}
@@ -199,12 +194,12 @@ export function ExpensesPage() {
             pb="2"
           >
             <Text fontSize="sm" color="fg.muted" fontWeight="medium">
-              Total Egresos
+              Total Ingresos
             </Text>
             <HStack>
-              <FiTrendingDown color="red" />
-              <Text fontSize="xl" fontWeight="bold" color="red.500">
-                {formatNumber(totalEgresos)}
+              <FiTrendingUp color="green" />
+              <Text fontSize="xl" fontWeight="bold" color="green.500">
+                {formatNumber(totalIncomes)}
               </Text>
             </HStack>
           </VStack>
@@ -224,7 +219,7 @@ export function ExpensesPage() {
               Valor * mes promedio
             </Text>
             <Text fontSize="xl" fontWeight="semibold">
-              {formatNumber(totalEgresos * 0.4)}
+              {formatNumber(totalIncomes * 0.4)}
             </Text>
           </VStack>
         </HStack>
@@ -232,9 +227,9 @@ export function ExpensesPage() {
 
       {/* Egresos List */}
       <VStack gap="3" align="stretch">
-        {filteredExpenses.map((exp) => (
+        {filteredIncomes.map((income) => (
           <Box
-            key={exp.id}
+            key={income.id}
             // bg="bg.muted"
             bg="bg.panel"
             borderRadius="lg"
@@ -257,10 +252,10 @@ export function ExpensesPage() {
             >
               <VStack align="start" gap="1" minWidth="16rem" width="30%">
                 <Text fontWeight="medium" fontSize="md">
-                  {exp.expense}
+                  {income.income_name}
                 </Text>
                 <Text color="fg.muted" fontSize="xs">
-                  {exp.description}
+                  {income.description}
                 </Text>
               </VStack>
               <VStack
@@ -272,27 +267,27 @@ export function ExpensesPage() {
               >
                 <HStack>
                   <Text color="fg.muted" fontSize="sm">
-                    {exp.concept_name}
+                    {income.type}
                   </Text>
                   <Text color="fg.muted" fontSize="sm">
-                    {exp.type_expense}
+                    {income.payment_method}
                   </Text>
                   <Text color="fg.muted" fontSize="sm">
-                    {exp.type}
+                    {income.reference_number}
                   </Text>
                 </HStack>
                 <HStack>
                   <Text fontSize="sm" color="fg.muted">
-                    {new Date(exp.expense_date).toLocaleDateString()}
+                    {new Date(income.income_date).toLocaleDateString()}
                   </Text>
                 </HStack>
               </VStack>
               <VStack align="start" gap="1" minWidth="8rem" paddingRight="1rem">
-                <Text fontSize="lg" fontWeight="bold" color="red.500">
-                  {formatNumber(exp.total_price)}
+                <Text fontSize="lg" fontWeight="bold" color="green.500">
+                  {formatNumber(income.income_value)}
                 </Text>
                 <Badge colorPalette="blue" size="sm" fontWeight="bold">
-                  {exp.project_name}
+                  {income.project_name}
                 </Badge>
               </VStack>
               <VStack
@@ -314,7 +309,7 @@ export function ExpensesPage() {
                       <MenuItem
                         value="edit"
                         onClick={() => {
-                          setFormDefaults(transformData(exp));
+                          setFormDefaults(transformData(income));
                           setFormMode("edit");
                           setOpen(true);
                         }}
@@ -326,7 +321,7 @@ export function ExpensesPage() {
                         value="delete"
                         color="fg.error"
                         onClick={() => {
-                          deleteExpenseById(exp.id);
+                          deleteIncomeById(income.id);
                         }}
                       >
                         <FiTrash2 />

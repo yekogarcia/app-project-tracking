@@ -22,7 +22,7 @@ import { Toaster, toaster } from "@/app/components/ux/toaster";
 import { expenseSchema, type ExpenseFormData } from "../schemas/schemaExpenses";
 
 import { expensesService } from "@/services/expenses/ExpensesService";
-import { projectsService } from "@/services/projects/ProjectsService";
+import type { ISelect } from "@/app";
 
 interface IFormProps {
   defaultValues?: Partial<ExpenseFormData>;
@@ -31,6 +31,7 @@ interface IFormProps {
   open: boolean;
   setOpen: Dispatch<React.SetStateAction<boolean>>;
   refreshDashboard: () => void;
+  projects: ISelect[]
   /** Mostrar el botón trigger interno (por defecto true). Si el trigger se coloca en el padre, pasar false */
 }
 
@@ -40,11 +41,11 @@ export const FormExpenses = ({
   open,
   setOpen,
   refreshDashboard,
+  projects
 }: IFormProps) => {
   //   const { onClose } = useDisclosure();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [concepts, setConcepts] = useState([]);
-  const [projects, setProjects] = useState([]);
 
   // const { account } = useAuthStore();
 
@@ -60,11 +61,8 @@ export const FormExpenses = ({
     }
   }, [defaultValues]);
 
-  useEffect(() => {
-    getProjects();
-  }, []);
 
-  const getConcepts = async (projectId: string) => {
+  const getConcepts = async (projectId: number) => {
     const response = await expensesService.getConceptsSelect(projectId);
     console.log(response);
 
@@ -73,24 +71,7 @@ export const FormExpenses = ({
     } else {
       showToaster({
         type: "error",
-        description:
-          response.message || "Error al cargar los conceptos",
-        duration: 3000,
-      });
-    }
-  };
-
-  const getProjects = async () => {
-    const response = await projectsService.getProjects("ALL");
-    console.log(response);
-
-    if (response.statusCode === 200) {
-      setProjects(response.data);
-    } else {
-      showToaster({
-        type: "error",
-        description:
-          response.message || "Error al cargar los conceptos de egreso",
+        description: response.message || "Error al cargar los conceptos",
         duration: 3000,
       });
     }
@@ -103,7 +84,7 @@ export const FormExpenses = ({
     } else {
       showToaster({
         type: "warn",
-        description:  "Selecciona un proyecto",
+        description: "Selecciona un proyecto",
         duration: 3000,
       });
     }
@@ -113,16 +94,17 @@ export const FormExpenses = ({
   useEffect(() => {
     if (open && mode === "create") {
       form.reset(defaultValues as any);
+    } else {
+      getConcepts(defaultValues?.projectId || 0);
     }
+    console.log("defaultValues", defaultValues);
+    
   }, [open, mode]);
 
   const handleSubmit = async (data: any) => {
-    console.log(data);
-    console.log(defaultValues);
     delete data.id;
     setIsSubmitting(true);
     const response = await expensesService.saveExpense(data, defaultValues?.id);
-    console.log(response);
 
     if (response.statusCode === 200) {
       showToaster({
@@ -131,6 +113,7 @@ export const FormExpenses = ({
       });
       form.reset();
       setOpen(false);
+      refreshDashboard()
     } else {
       showToaster({
         type: "error",
@@ -138,7 +121,7 @@ export const FormExpenses = ({
         duration: 6000,
       });
     }
-    // refreshDashboard();
+    refreshDashboard();
     setIsSubmitting(false);
   };
 
@@ -151,14 +134,13 @@ export const FormExpenses = ({
     });
   };
 
-const price = form.watch('price');
-const quantity = form.watch('quantity');
+  const price = form.watch("price");
+  const quantity = form.watch("quantity");
 
-useEffect(() => {
-  console.log(quantity);
-  form.setValue('totalPrice', quantity * price)
-}, [price, quantity]);
-  
+  useEffect(() => {
+    console.log(quantity);
+    form.setValue("totalPrice", quantity * price);
+  }, [price, quantity]);
 
   return (
     <>

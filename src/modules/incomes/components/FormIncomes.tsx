@@ -1,6 +1,7 @@
 import {
   Form,
   InputField,
+  NumberField,
   SelectField,
   TextAreaField,
 } from "@/app/components/ui/forms";
@@ -16,117 +17,87 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, type Dispatch, useEffect } from "react";
 import { useForm } from "react-hook-form";
-// import { FiPlus } from "react-icons/fi";
-// import { createToaster } from "@chakra-ui/react";
 import { Toaster, toaster } from "@/app/components/ux/toaster";
 
-import {
-  projectsSchema,
-  type ProjectsFormData,
-} from "../schemas/schemaProject";
-// import { ProjectsService } from "@/services/projects/ProjectsService";
+import { incomeSchema, type IncomeFormData } from "../schemas/schemaIncomes";
 
-import { projectsService } from "@/services/projects/ProjectsService";
-// import { useAuthStore } from "@/modules/auth/store/auth.store";
+import type { ISelect } from "@/app";
+import { incomesService } from "@/services/incomes/IncomesServices";
 
 interface IFormProps {
-  defaultValues?: Partial<ProjectsFormData>;
+  defaultValues?: Partial<IncomeFormData>;
   /** 📝 Modo del formulario: 'create' | 'edit' */
   mode?: "create" | "edit";
   open: boolean;
   setOpen: Dispatch<React.SetStateAction<boolean>>;
   refreshDashboard: () => void;
+  projects: ISelect[];
   /** Mostrar el botón trigger interno (por defecto true). Si el trigger se coloca en el padre, pasar false */
 }
 
-const FormProjects = ({
+export const FormIncomes = ({
   defaultValues,
   mode = "create",
   open,
   setOpen,
   refreshDashboard,
+  projects,
 }: IFormProps) => {
   //   const { onClose } = useDisclosure();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [type, setType] = useState<"PROJECT" | "SUBPROJECT" | "">("PROJECT");
-  const [projects, setProjects] = useState<any[]>([]);
-  const [required, setRequired] = useState(false);
 
   // const { account } = useAuthStore();
 
-  const form = useForm<ProjectsFormData>({
-    resolver: zodResolver(projectsSchema),
+  const form = useForm<IncomeFormData>({
+    resolver: zodResolver(incomeSchema),
     defaultValues: defaultValues,
   });
 
+  // When defaultValues change (e.g. edit action), reset the form to load values
   useEffect(() => {
     if (defaultValues) {
       form.reset(defaultValues as any);
-      // set local UI state (type / required) based on incoming values
-      if ((defaultValues as any).type) {
-        setType((defaultValues as any).type as any);
-        setRequired(((defaultValues as any).type as any) === "SUBPROJECT");
-      }
     }
   }, [defaultValues]);
 
+  // const onChangeType = async () => {
+  //   const values = form.getValues();
+  //   if (values.projectId) {
+  //     getConcepts(values.projectId);
+  //   } else {
+  //     showToaster({
+  //       type: "warn",
+  //       description: "Selecciona un proyecto",
+  //       duration: 3000,
+  //     });
+  //   }
+  // };
+
+  // If dialog opens in create mode, ensure form is reset to the create defaults
   useEffect(() => {
     if (open && mode === "create") {
       form.reset(defaultValues as any);
-      setType((defaultValues as any)?.type ?? "PROJECT");
-      setRequired(false);
-    } else {
-      getProject(defaultValues);
     }
+    console.log("defaultValues", defaultValues);
   }, [open, mode]);
 
-  const getProject = async (values: any) => {
-    if (values.type === "SUBPROJECT") {
-      const { data, message } = await projectsService.getProjects("PROJECT");
-      if (data.length > 0) {
-        setRequired(true);
-        setType(values.type);
-        setProjects(data);
-      } else {
-        form.setValue("type", "PROJECT");
-        setType("PROJECT");
-        setRequired(false);
-        showToaster({
-          type: "error",
-          description: message || "No se pudieron cargar los proyectos",
-          duration: 6000,
-        });
-      }
-    } else {
-      setType(values.type);
-      setRequired(false);
-    }
-  };
-
-  const onChangeType = async () => {
-    const values = form.getValues();
-    getProject(values);
-  };
-
   const handleSubmit = async (data: any) => {
-    console.log(data);
-    console.log(defaultValues);
     delete data.id;
     setIsSubmitting(true);
-    const response = await projectsService.saveProject(data, defaultValues?.id);
+    const response = await incomesService.saveIncome(data, defaultValues?.id);
+
     if (response.statusCode === 200) {
       showToaster({
         type: "success",
-        description: "Proyecto guardado exitosamente",
+        description: "Ingreso guardado exitosamente",
       });
-      setRequired(false);
-      setType("PROJECT");
       form.reset();
       setOpen(false);
+      refreshDashboard();
     } else {
       showToaster({
         type: "error",
-        description: response.message || "Error al crear el proyecto",
+        description: response.message || "Error al crear el ingreso",
         duration: 6000,
       });
     }
@@ -148,6 +119,7 @@ const FormProjects = ({
       <Dialog.Root
         size={{ md: "lg" }}
         open={open}
+        // onOpenChange may provide an object or boolean depending on the dialog implementation
         onOpenChange={(details: any) => {
           const next = typeof details === "boolean" ? details : details?.open;
           setOpen(Boolean(next));
@@ -159,14 +131,14 @@ const FormProjects = ({
           <Dialog.Positioner>
             <Dialog.Content>
               <Dialog.Header>
-                <Dialog.Title>Crea tu proyecto o subproyecto</Dialog.Title>
+                <Dialog.Title>Registra un nuevo ingreso</Dialog.Title>
               </Dialog.Header>
               <Dialog.Body>
                 <VStack gap="4">
                   <Form
                     form={form}
                     onSubmit={handleSubmit}
-                    width="600px"
+                    size="container"
                     maxWidth="100%"
                     mx="auto"
                     display="flex"
@@ -177,78 +149,80 @@ const FormProjects = ({
                       templateColumns={{ base: "1fr", md: "1fr 1fr" }}
                       gap={4}
                     >
-                      {/* Tipo de usuario - Ocupa toda la fila */}
+                      <SelectField
+                        name="projectId"
+                        control={form.control}
+                        label="Proyecto"
+                        placeholder="Selecciona el proyecto"
+                        isRequired
+                        disabled={isSubmitting}
+                        options={projects}
+                      />
                       <SelectField
                         name="type"
                         control={form.control}
-                        label="Tipo"
+                        label="Tipo de egreso"
                         placeholder="Selecciona el tipo"
                         isRequired
                         disabled={isSubmitting}
-                        onChange={onChangeType}
                         options={[
-                          { value: "PROJECT", label: "PROJECT" },
-                          { value: "SUBPROJECT", label: "SUBPROJECT" },
+                          { value: "OPERACIONALES", label: "OPERACIONALES" },
+                          {
+                            value: "NO OPERACIONALES",
+                            label: "NO OPERACIONALES",
+                          },
                         ]}
                       />
-                      {type === "SUBPROJECT" && (
-                        <SelectField
-                          name="parentId"
-                          control={form.control}
-                          label="Proyecto"
-                          placeholder="Selecciona el proyecto padre"
-                          isRequired={required}
-                          disabled={isSubmitting}
-                          options={projects}
-                        />
-                      )}
                       <GridItem>
                         <InputField
-                          name="name"
+                          name="incomeName"
                           control={form.control}
-                          label="Nombre del proyecto"
-                          placeholder="Nombre del proyecto"
-                          isRequired
-                          disabled={isSubmitting}
-                        />
-                      </GridItem>
-
-                      <GridItem>
-                        <SelectField
-                          name="status"
-                          control={form.control}
-                          label="Estado"
-                          placeholder="Selecciona el estado"
-                          isRequired
-                          disabled={isSubmitting}
-                          options={[
-                            { value: "ACTIVE", label: "ACTIVE" },
-                            { value: "RUNNING", label: "RUNNING" },
-                            { value: "SUSPENDED", label: "SUSPENDED" },
-                            { value: "CANCELED", label: "CANCELED" },
-                            { value: "COMPLETED", label: "COMPLETED" },
-                          ]}
-                        />
-                      </GridItem>
-                      <GridItem>
-                        <InputField
-                          name="startDate"
-                          type="date"
-                          control={form.control}
-                          label="Fecha de inicio"
-                          placeholder="Fecha de inicio"
+                          label="Ingreso"
+                          placeholder="Ingreso"
                           isRequired
                           disabled={isSubmitting}
                         />
                       </GridItem>
                       <GridItem>
-                        <InputField
-                          name="endDate"
-                          type="date"
+                        <NumberField
+                          name="incomeValue"
                           control={form.control}
-                          label="Fecha de finalización"
-                          placeholder="Fecha de finalización"
+                          label="Valor ingreso"
+                          placeholder="Valor ingreso"
+                          isRequired
+                          disabled={isSubmitting}
+                        />
+                      </GridItem>
+                      <SelectField
+                        name="paymentMethod"
+                        control={form.control}
+                        label="Metodo de pago"
+                        placeholder="Selecciona el metodo de pago"
+                        isRequired
+                        disabled={isSubmitting}
+                        options={[
+                          { value: "EFECTIVO", label: "EFECTIVO" },
+                          { value: "TRANFERENCIA", label: "TRANFERENCIA" },
+                        ]}
+                      />
+                      <GridItem>
+                        <InputField
+                          name="referenceNumber"
+                          control={form.control}
+                          label="Número de referencia"
+                          placeholder="Número de referencia"
                           isRequired={false}
+                          disabled={isSubmitting}
+                        />
+                      </GridItem>
+                      <GridItem>
+                        <InputField
+                          name="incomeDate"
+                          type="date"
+                          control={form.control}
+                          label="Fecha de ingreso"
+                          placeholder="Fecha de ingreso"
+                          isRequired
                           disabled={isSubmitting}
                         />
                       </GridItem>
@@ -304,5 +278,3 @@ const FormProjects = ({
     </>
   );
 };
-
-export default FormProjects;

@@ -6,8 +6,10 @@ import {
   type FieldValues,
 } from "react-hook-form";
 
-interface InputFieldProps<T extends FieldValues = FieldValues>
-  extends Omit<InputProps, "name"> {
+interface InputFieldProps<T extends FieldValues = FieldValues> extends Omit<
+  InputProps,
+  "name"
+> {
   name: FieldPath<T>;
   control: Control<T>;
   label?: string;
@@ -41,6 +43,15 @@ export function InputField<T extends FieldValues = FieldValues>({
       <Input
         {...field}
         {...inputProps}
+        onChange={(e) => {
+          if (inputProps.type === "number") {
+            field.onChange(
+              e.target.value === "" ? undefined : parseInt(e.target.value),
+            );
+          } else {
+            field.onChange(e.target.value);
+          }
+        }}
         outline="none"
         size={{ base: "md", md: "md" }}
         borderColor={{ base: "gray.300", _dark: "gray.600" }}

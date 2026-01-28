@@ -30,11 +30,11 @@ export function DesktopSidebar({
       w={isCollapsed ? "16" : "64"}
       bg="bg.surface"
       borderRightWidth="1px"
-      borderColor="border.subtle"
+      // borderColor="gray.700"
+      boxShadow="xs"
       _light={{
-        // in light mode, ensure a slightly stronger separator and a subtle inset shadow
         borderColor: "gray.200",
-        boxShadow: "inset -1px 0 0 rgba(0,0,0,0.04)",
+        // boxShadow: "inset -1px 0 0 rgba(0,0,0,0.04)",
       }}
       _dark={{
         borderColor: "gray.700",

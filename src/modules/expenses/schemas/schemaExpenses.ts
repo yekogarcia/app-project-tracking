@@ -12,12 +12,12 @@ export const descriptionSchema = z.string()
 export const expenseSchema = z
     .object({
         id: z.number().optional(),
-        projectId: z.string().min(1, 'El concepto es requerido'),
+        projectId: z.number().min(1, 'El proyecto es requerido'),
         typeExpense: expenseTypeSchema,
         type: z.enum(['FIJO', 'VARIABLE'], {
             message: 'El tipo debe ser FIJO o VARIABLE',
         }),
-        concept: z.string().min(1, 'El concepto es requerido'),
+        concept: z.number().min(1, 'El concepto es requerido'),
         expense: z.string().min(1, 'El egreso es requerido'),
         price: z.number().min(0, 'El precio debe ser mayor o igual a 0'),
         quantity: z.number().min(1, 'La cantidad debe ser mayor  a 0'),

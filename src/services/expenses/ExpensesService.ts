@@ -9,22 +9,30 @@ class ExpensesService {
         return resp;
     }
 
-    async getConceptsSelect(projectId: string) {
+    async getConceptsSelect(projectId: number) {
         const resp = await useFetch(`/concepts/project/${projectId}?select=true`, { method: 'GET' });
         return resp;
     }
 
+    async getExpenses() {
+        const resp = await useFetch('/expenses', { method: 'GET' })
+        return resp;
+    }
+
     async saveExpense(data: ExpenseFormData, id?: number | undefined) {
-        const resp = await useFetch(id ? `expenese/${id}` : '/expenses', {
+        const resp = await useFetch(id ? `/expenses/${id}` : '/expenses', {
             method: id ? 'PUT' : 'POST',
             body: JSON.stringify(data)
         })
         return resp;
     }
 
-    async getExpenses() {
-        // Implementation for fetching expenses
-    }
+    async deleteExpense(id: number) {
+        return await useFetch(`/expenses/${id}`, {
+            method: 'DELETE'
+        }); 
+    } 
+
 
 }
 

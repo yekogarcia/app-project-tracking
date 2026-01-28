@@ -29,7 +29,7 @@ import { Toaster } from "@/app/components/ux/toaster";
 import { useEffect, useState } from "react";
 import FormProjects from "../components/FormProjects";
 import { projectsService } from "@/services/projects/ProjectsService";
-import { formatDateShort, showToaster } from "@/app/utils/utils";
+import { formatDate, formatDateShort, showToaster } from "@/app/utils/utils";
 
 interface Subproyecto {
   id: string;
@@ -93,8 +93,6 @@ export function ProjectsPage() {
 
   const getProjects = async () => {
     const projects = await projectsService.getAllProjects();
-    console.log(projects);
-    
     setProjects(projects.data);
   };
 
@@ -146,7 +144,7 @@ export function ProjectsPage() {
     <VStack gap="6" align="stretch">
       {/* Header */}
       <Toaster />
-      <HStack justify="space-between" align="start">
+      <HStack flexWrap="wrap" justify="space-between" align="start">
         <Box>
           <Heading size="lg" color="fg.emphasized">
             Proyectos
@@ -369,18 +367,6 @@ export function ProjectsPage() {
                     <MenuItem
                       value="edit"
                       onClick={() => {
-                        // ensure dates are provided in YYYY-MM-DD format for input[type=date]
-                        const formatDate = (d: any) => {
-                          try {
-                            if (!d) return "";
-                            const dt = new Date(d);
-                            if (isNaN(dt.getTime())) return "";
-                            return dt.toISOString().slice(0, 10);
-                          } catch (e) {
-                            return "";
-                          }
-                        };
-
                         setFormDefaults({
                           id: project.id,
                           type: project.type || "PROJECT",
@@ -402,8 +388,6 @@ export function ProjectsPage() {
                       value="delete"
                       color="fg.error"
                       onClick={() => {
-                        // Implement delete functionality here
-                        console.log("Delete project", project.id);
                         if (project.status == "ACTIVE") {
                           deleteProjectById(project.id);
                         } else {
