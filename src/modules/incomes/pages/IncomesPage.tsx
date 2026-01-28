@@ -80,8 +80,6 @@ export function IncomesPage() {
 
   const deleteIncomeById = async (id: any) => {
     const resp = await incomesService.deleteIncome(id);
-    console.log(resp);
-
     if (resp.statusCode === 200) {
       showToaster({
         type: "success",

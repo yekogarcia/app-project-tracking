@@ -15,6 +15,9 @@ export const useFetch = async (path: string, options: RequestInit = {}) => {
         });
 
         const data = await response.json();
+        if (response.status === 401) {
+            window.dispatchEvent(new Event("unauthorized"));
+        }
         return data;
 
     } catch (error) {

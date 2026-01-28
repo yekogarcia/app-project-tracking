@@ -36,8 +36,6 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     setErrorMessage(null);
 
     const response = await authService.login(data);
-    console.log(response);
-    
 
     if (response.isAuthenticated) {
       setSuccessMessage("¡Inicio de sesión exitoso! Redirigiendo...");
@@ -46,7 +44,6 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     } else {
       setErrorMessage(response.message);
     }
-    console.log("Respuesta del servicio de login:", response);
     setLoading(false);
   };
 

@@ -43,18 +43,15 @@ export const FormExpenses = ({
   refreshDashboard,
   projects
 }: IFormProps) => {
-  //   const { onClose } = useDisclosure();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [concepts, setConcepts] = useState([]);
 
-  // const { account } = useAuthStore();
 
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
     defaultValues: defaultValues,
   });
 
-  // When defaultValues change (e.g. edit action), reset the form to load values
   useEffect(() => {
     if (defaultValues) {
       form.reset(defaultValues as any);
@@ -64,7 +61,6 @@ export const FormExpenses = ({
 
   const getConcepts = async (projectId: number) => {
     const response = await expensesService.getConceptsSelect(projectId);
-    console.log(response);
 
     if (response.statusCode === 200) {
       setConcepts(response.data);
@@ -97,8 +93,6 @@ export const FormExpenses = ({
     } else {
       getConcepts(defaultValues?.projectId || 0);
     }
-    console.log("defaultValues", defaultValues);
-    
   }, [open, mode]);
 
   const handleSubmit = async (data: any) => {
@@ -138,7 +132,6 @@ export const FormExpenses = ({
   const quantity = form.watch("quantity");
 
   useEffect(() => {
-    console.log(quantity);
     form.setValue("totalPrice", quantity * price);
   }, [price, quantity]);
 

@@ -61,8 +61,8 @@ export function Form<T extends FieldValues = FieldValues>({
   // Determinar las dimensiones finales
   const sizeConfig = FORM_SIZES[size];
   const finalWidth = width ?? (sizeConfig as any).width;
-  console.log(sizeConfig);
-  console.log(finalWidth);
+  // console.log(sizeConfig);
+  // console.log(finalWidth);
   
 
   // Solo aplicar maxWidth si se especifica explícitamente

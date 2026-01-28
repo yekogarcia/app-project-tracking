@@ -18,8 +18,6 @@ class AuthService {
                 body: JSON.stringify(credentials)
             });
             const resp = await response.json();
-            console.log(resp);
-
 
             if (resp.statusCode === 200) {
                 return {

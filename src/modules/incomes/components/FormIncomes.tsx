@@ -78,7 +78,6 @@ export const FormIncomes = ({
     if (open && mode === "create") {
       form.reset(defaultValues as any);
     }
-    console.log("defaultValues", defaultValues);
   }, [open, mode]);
 
   const handleSubmit = async (data: any) => {
