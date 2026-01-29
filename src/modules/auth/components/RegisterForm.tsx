@@ -10,7 +10,6 @@ import {
   Form,
   InputField,
   SelectField,
-  NumberField,
 } from "../../../app/components/ui/forms";
 import { registerSchema, type RegisterFormData } from "../schemas";
 import { registerUserService as service } from "../../../services/auth/RegisterUserServices";
@@ -182,15 +181,12 @@ export function RegisterForm({
         </GridItem>
 
         <GridItem>
-          <NumberField
+          <InputField
             name="phone"
+            type="number"
             control={form.control}
             label="Teléfono"
             placeholder="3001234567"
-            allowDecimals={false}
-            min={1000000000}
-            max={9999999999}
-            helperText="Solo números (ej: 3001234567)"
             isRequired
             disabled={isSubmitting}
           />
