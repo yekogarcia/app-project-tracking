@@ -114,7 +114,6 @@ export function IncomesPage() {
     ? incomes.filter((income) => income.project_id == selectedProject)
     : incomes;
 
-
   const totalIncomes = filteredIncomes.reduce(
     (sum, income) => sum + parseFloat(income.income_value),
     0,
@@ -131,17 +130,22 @@ export function IncomesPage() {
             Gestiona todos los ingresos de tus proyectos
           </Text>
         </Box>
-        <HStack gap="3">
-          <Box>
-            <NativeSelectRoot>
+        <HStack gap="3" flexWrap="wrap" width={{ base: "100%", md: "auto" }}>
+          <Box width={{ base: "30rem", md: "auto" }}>
+            <NativeSelectRoot
+              display="flex"
+              alignItems="center"
+              flexDirection={{ base: "column", md: "row" }}
+              gap={{ base: "3", md: "2" }}
+            >
               <NativeSelectField
-                minW="16rem"
-                mr="2"
+                minW={{ base: "100%", md: "10rem" }}
+                w={{ base: "100%", md: "14rem" }}
+                mr={{ base: "0", md: "2" }}
                 value={selectedProject}
                 onChange={(e) => setSelectedProject(e.target.value)}
-                placeholder="Filtrar por proyecto"
+                placeholder="Todos los proyectos"
               >
-                <option value="">Todos los proyectos</option>
                 {projects.map((project) => (
                   <option key={project.key} value={project.value}>
                     {project.label}
@@ -149,7 +153,9 @@ export function IncomesPage() {
                 ))}
               </NativeSelectField>
               <Button
+                w={{ base: "100%", md: "auto" }}
                 colorScheme="blue"
+                paddingInline="1rem"
                 onClick={() => {
                   setFormDefaults(formDefaultsValues);
                   setFormMode("create");
@@ -171,13 +177,7 @@ export function IncomesPage() {
           />
         </HStack>
       </HStack>
-      <Box
-      // bg="bg.panel"
-      // borderRadius="lg"
-      // borderWidth="1px"
-      // borderColor="border.subtle"
-      // p="4"
-      >
+      <Box>
         <HStack gap="10">
           <VStack
             align="start"

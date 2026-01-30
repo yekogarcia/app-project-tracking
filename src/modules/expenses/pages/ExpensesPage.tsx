@@ -34,7 +34,7 @@ const formDefaultsValues = {
   typeExpense: "COSTO",
   concept: undefined,
   type: "",
-  quantity: 1,
+  quantity: "",
   price: 0,
   totalPrice: 0,
   description: "",
@@ -138,17 +138,22 @@ export function ExpensesPage() {
             Controla todos los gastos y egresos del proyecto
           </Text>
         </Box>
-        <HStack gap="3">
-          <Box>
-            <NativeSelectRoot>
+        <HStack gap="3" flexWrap="wrap" width={{ base: "100%", md: "auto" }}>
+          <Box width={{ base: "30rem", md: "auto" }}>
+            <NativeSelectRoot 
+              display="flex" 
+              alignItems="center" 
+              flexDirection={{ base: "column", md: "row" }}
+              gap={{ base: "3", md: "2" }}
+            >
               <NativeSelectField
-                minW="16rem"
-                mr="2"
+                minW={{ base: "100%", md: "10rem" }}
+                w={{ base: "100%", md: "14rem" }}
+                mr={{ base: "0", md: "2" }}
                 value={selectedProject}
                 onChange={(e) => setSelectedProject(e.target.value)}
-                placeholder="Filtrar por proyecto"
+                placeholder="Todos los proyectos"
               >
-                <option value="">Todos los proyectos</option>
                 {projects.map((project) => (
                   <option key={project.key} value={project.value}>
                     {project.label}
@@ -156,14 +161,16 @@ export function ExpensesPage() {
                 ))}
               </NativeSelectField>
               <Button
+                w={{ base: "100%", md: "auto" }}
                 colorScheme="blue"
+                paddingInline="1rem"
                 onClick={() => {
                   setFormDefaults(formDefaultsValues);
                   setFormMode("create");
                   setOpen(true);
                 }}
               >
-                <IoMdAdd style={{ marginRight: 8 }} />
+                <IoMdAdd />
                 Nuevo egreso
               </Button>
             </NativeSelectRoot>
@@ -178,13 +185,7 @@ export function ExpensesPage() {
           />
         </HStack>
       </HStack>
-      <Box
-      // bg="bg.panel"
-      // borderRadius="lg"
-      // borderWidth="1px"
-      // borderColor="border.subtle"
-      // p="4"
-      >
+      <Box>
         <HStack gap="10">
           <VStack
             align="start"

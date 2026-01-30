@@ -31,7 +31,7 @@ interface IFormProps {
   open: boolean;
   setOpen: Dispatch<React.SetStateAction<boolean>>;
   refreshDashboard: () => void;
-  projects: ISelect[]
+  projects: ISelect[];
   /** Mostrar el botón trigger interno (por defecto true). Si el trigger se coloca en el padre, pasar false */
 }
 
@@ -41,11 +41,10 @@ export const FormExpenses = ({
   open,
   setOpen,
   refreshDashboard,
-  projects
+  projects,
 }: IFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [concepts, setConcepts] = useState([]);
-
 
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
@@ -57,7 +56,6 @@ export const FormExpenses = ({
       form.reset(defaultValues as any);
     }
   }, [defaultValues]);
-
 
   const getConcepts = async (projectId: number) => {
     const response = await expensesService.getConceptsSelect(projectId);
@@ -107,7 +105,7 @@ export const FormExpenses = ({
       });
       form.reset();
       setOpen(false);
-      refreshDashboard()
+      refreshDashboard();
     } else {
       showToaster({
         type: "error",
@@ -140,7 +138,6 @@ export const FormExpenses = ({
       <Dialog.Root
         size={{ md: "lg" }}
         open={open}
-        // onOpenChange may provide an object or boolean depending on the dialog implementation
         onOpenChange={(details: any) => {
           const next = typeof details === "boolean" ? details : details?.open;
           setOpen(Boolean(next));

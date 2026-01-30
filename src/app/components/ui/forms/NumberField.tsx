@@ -1,5 +1,5 @@
 import { Field, type InputProps, NumberInput } from "@chakra-ui/react";
-// import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   useController,
   type Control,
@@ -47,22 +47,25 @@ export function NumberField<T extends FieldValues = FieldValues>({
   });
 
   const { value, ref, onBlur, onChange } = field;
+  const [isFocused, setIsFocused] = useState(false);
 
   return (
     <Field.Root invalid={invalid} required={isRequired}>
       {label && <Field.Label>{label}</Field.Label>}
       <NumberInput.Root
-        // onChange={onChange}
         ref={ref}
-        onBlur={onBlur}
+        onBlur={() => {
+          setIsFocused(false);
+          onBlur();
+        }}
         disabled={inputProps.disabled}
-        value={value?.toString() ?? ""}
+        value={isFocused ? "" : (value?.toString() ?? "")}
         onValueChange={(details) => {
-          onChange(details.valueAsNumber);
+          if (!isFocused) {
+            onChange(details.valueAsNumber || 0);
+          }
         }}
         name={name}
-        // {...field}
-        // {...inputProps}
         outline="none"
         width="100%"
         borderRadius="0.3rem"
@@ -84,7 +87,18 @@ export function NumberField<T extends FieldValues = FieldValues>({
         }}
       >
         <NumberInput.Control />
-        <NumberInput.Input />
+        <NumberInput.Input 
+          onFocus={(e) => {
+            setIsFocused(true);
+            e.target.value = "";
+          }}
+          onChange={(e) => {
+            if (isFocused) {
+              const numValue = parseFloat(e.target.value) || 0;
+              onChange(numValue);
+            }
+          }}
+        />
       </NumberInput.Root>
       {error && <Field.ErrorText>{error.message}</Field.ErrorText>}
       {helperText && !error && (
