@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { UIProvider } from "./app/components/ui/provider";
 import { router } from "./app/routes";
+import { registerSW } from 'virtual:pwa-register';
 
 import "./index.css";
 
@@ -14,10 +15,11 @@ createRoot(document.getElementById("root")!).render(
   </StrictMode>
 );
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch((err) => {
-      console.error("Service Worker registration failed:", err);
-    });
-  });
-}
+registerSW({
+  onOfflineReady() {
+    console.log('PWA lista para offline')
+  },
+  onNeedRefresh() {
+    console.log('Nueva versión disponible')
+  },
+})
