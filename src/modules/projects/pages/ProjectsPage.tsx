@@ -224,28 +224,6 @@ export function ProjectsPage() {
             </VStack>
           </HStack>
         </Box>
-
-        <Box
-          bg="bg.panel"
-          borderRadius="lg"
-          borderWidth="1px"
-          borderColor="border.subtle"
-          boxShadow="sm"
-          p="4"
-        >
-          <HStack>
-            <FiCalendar size="18" color="orange" />
-            <VStack align="start" gap="0">
-              <Text fontSize="xs" fontWeight="bold" color="fg.muted">
-                En ejecución
-              </Text>
-              <Text fontSize="xl" fontWeight="bold" color="orange.500">
-                {totals?.RUNNING || 0}
-              </Text>
-            </VStack>
-          </HStack>
-        </Box>
-
         <Box
           bg="bg.panel"
           borderRadius="lg"
@@ -266,7 +244,6 @@ export function ProjectsPage() {
             </VStack>
           </HStack>
         </Box>
-
         <Box
           bg="bg.panel"
           borderRadius="lg"

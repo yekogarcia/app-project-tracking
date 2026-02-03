@@ -9,9 +9,10 @@ import {
   FiHome, 
   FiTrendingUp, 
   FiTrendingDown, 
-  FiFolderPlus,
   FiUser 
 } from "react-icons/fi";
+import { IoMdList } from "react-icons/io";
+import { GrProjects } from "react-icons/gr";
 
 interface ResponsiveLayoutProps {
   children: React.ReactNode;
@@ -27,9 +28,15 @@ const adminMenuItems: NavigationItem[] = [
     path: '/admin',
   },
   {
+    id: 'Conceptos',
+    label: 'Conceptos',
+    icon: <IoMdList />,
+    path: '/admin/concepts',
+  },
+  {
     id: 'proyectos',
     label: 'Proyectos',
-    icon: <FiFolderPlus />,
+    icon: <GrProjects />,
     path: '/admin/projects',
   },
   {

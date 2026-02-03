@@ -50,7 +50,7 @@ export function DesktopSidebar({
           color="fg.emphasized"
           display={isCollapsed ? "none" : "block"}
         >
-          Project Tracker
+          Project Tracking
         </Text>
         {isCollapsed && (
           <Text fontSize="xl" fontWeight="bold" color="fg.emphasized">

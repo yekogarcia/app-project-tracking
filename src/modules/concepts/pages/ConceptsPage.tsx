@@ -15,28 +15,25 @@ import {
   MenuItem,
 } from "@chakra-ui/react";
 
-import { FiMoreVertical, FiEdit, FiTrash2, FiTrendingUp } from "react-icons/fi";
+import { FiMoreVertical, FiEdit, FiTrash2 } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
-import { formatDate, formatNumber, showToaster } from "@/app/utils/utils";
+import { showToaster } from "@/app/utils/utils";
 import { projectsService } from "@/services/projects/ProjectsService";
 import type { ISelect } from "@/app";
-import { FormIncomes } from "../components/FormIncomes";
-import { incomesService } from "@/services/incomes/IncomesServices";
+import { FormConcepts } from "../components/FormConcepts";
+import { conceptsService } from "@/services/concepts/conceptsService";
 
 const formDefaultsValues = {
-  typeExpense: "COSTO",
-  concept: undefined,
-  type: "",
-  quantity: 1,
-  price: 0,
-  totalPrice: 0,
+  concept: "",
+  status: "ACTIVO",
+  view: "",
   description: "",
   projectId: undefined,
 };
 
-export function IncomesPage() {
-  const [incomes, setIncomes] = useState<any[]>([]);
+export function ConceptsPage() {
+  const [concepts, setConcepts] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [formDefaults, setFormDefaults] = useState<any>(formDefaultsValues);
@@ -44,51 +41,48 @@ export function IncomesPage() {
   const [projects, setProjects] = useState<ISelect[]>([]);
 
   useEffect(() => {
-    getAllIncomes();
+    getAllConcepts();
     getProjects();
   }, []);
 
   const refreshDashboard = () => {
-    getAllIncomes();
+    getAllConcepts();
   };
 
-  const getAllIncomes = async () => {
-    const resp = await incomesService.getIncomes();
+  const getAllConcepts = async () => {
+    const resp = await conceptsService.getConcepts();
     if (resp.statusCode === 200) {
-      setIncomes(resp.data);
+      setConcepts(resp.data);
     } else {
       showToaster({
         type: "warning",
-        description: resp.message || "No se pudo cargar los ingresos",
+        description: resp.message || "No se pudo cargar los conceptos",
       });
     }
   };
 
-  const transformData = (income: any) => {
+  const transformData = (concept: any) => {
     return {
-      id: income.id,
-      projectId: income.project_id,
-      type: income.type,
-      incomeName: income.income_name,
-      incomeValue: parseFloat(income.income_value),
-      paymentMethod: income.payment_method,
-      referenceNumber: income.reference_number,
-      incomeDate: formatDate(income.income_date),
-      description: income.description,
+      id: concept.id,
+      concept: concept.concept,
+      status: concept.status,
+      view: concept.view,
+      projectId: concept.project_id,
+      description: concept.description,
     };
   };
 
-  const deleteIncomeById = async (id: any) => {
-    const resp = await incomesService.deleteIncome(id);
+  const deleteConceptById = async (id: any) => {
+    const resp = await conceptsService.deleteConcept(id);
     if (resp.statusCode === 200) {
       showToaster({
         type: "success",
-        description: "Egreso eliminado exitosamente",
+        description: "Concepto eliminado exitosamente",
       });
     } else {
       showToaster({
         type: "warning",
-        description: resp.message || "No se pudo eliminar el egreso",
+        description: resp.message || "No se pudo eliminar el concepto",
       });
     }
     await refreshDashboard();
@@ -103,31 +97,26 @@ export function IncomesPage() {
       showToaster({
         type: "error",
         description:
-          response.message || "Error al cargar los proyectos de egreso",
+          response.message || "Error al cargar los proyectos de concepto",
         duration: 3000,
       });
     }
   };
 
-  // Filter egresos by selected project
-  const filteredIncomes = selectedProject
-    ? incomes.filter((income) => income.project_id == selectedProject)
-    : incomes;
-
-  const totalIncomes = filteredIncomes.reduce(
-    (sum, income) => sum + parseFloat(income.income_value),
-    0,
-  );
+  // Filter conceptos by selected project
+  const filteredConcepts = selectedProject
+    ? concepts.filter((concept) => concept.project_id == selectedProject)
+    : concepts;
 
   return (
     <VStack gap="6" align="stretch">
       <HStack flexWrap="wrap" justify="space-between" align="start">
         <Box>
           <Heading size="lg" color="fg.emphasized">
-            Ingresos
+            Conceptos
           </Heading>
           <Text color="fg.muted" mt="1">
-            Gestiona todos los ingresos de tus proyectos
+            Gestiona todos los conceptos de tus costos, gastos y activos
           </Text>
         </Box>
         <HStack gap="3" flexWrap="wrap" width={{ base: "100%", md: "auto" }}>
@@ -163,11 +152,11 @@ export function IncomesPage() {
                 }}
               >
                 <IoMdAdd style={{ marginRight: 8 }} />
-                Nuevo Ingreso
+                Nuevo concepto
               </Button>
             </NativeSelectRoot>
           </Box>
-          <FormIncomes
+          <FormConcepts
             defaultValues={formDefaults}
             mode={formMode}
             open={open}
@@ -177,57 +166,12 @@ export function IncomesPage() {
           />
         </HStack>
       </HStack>
-      <Box>
-        <HStack gap="10">
-          <VStack
-            align="start"
-            bg="bg.panel"
-            borderRadius="lg"
-            borderWidth="1px"
-            borderColor="border.subtle"
-            boxShadow="sm"
-            pr="4"
-            pl="4"
-            pt="2"
-            pb="2"
-          >
-            <Text fontSize="sm" color="fg.muted" fontWeight="medium">
-              Total Ingresos
-            </Text>
-            <HStack>
-              <FiTrendingUp color="green" />
-              <Text fontSize="xl" fontWeight="bold" color="green.500">
-                {formatNumber(totalIncomes)}
-              </Text>
-            </HStack>
-          </VStack>
-          {/* <VStack
-            align="start"
-            bg="bg.panel"
-            borderRadius="lg"
-            borderWidth="1px"
-            borderColor="border.subtle"
-            boxShadow="sm"
-            pr="4"
-            pl="4"
-            pt="2"
-            pb="2"
-          >
-            <Text fontSize="sm" color="fg.muted" fontWeight="medium">
-              Valor * mes promedio
-            </Text>
-            <Text fontSize="xl" fontWeight="semibold">
-              {formatNumber(totalIncomes * 0.4)}
-            </Text>
-          </VStack> */}
-        </HStack>
-      </Box>
 
-      {/* Egresos List */}
+      {/* Conceptos List */}
       <VStack gap="3" align="stretch">
-        {filteredIncomes.map((income) => (
+        {filteredConcepts.map((concept) => (
           <Box
-            key={income.id}
+            key={concept.id}
             // bg="bg.muted"
             bg="bg.panel"
             borderRadius="lg"
@@ -250,10 +194,10 @@ export function IncomesPage() {
             >
               <VStack align="start" gap="1" minWidth="16rem" width="30%">
                 <Text fontWeight="medium" fontSize="md">
-                  {income.income_name}
+                  {concept.concept}
                 </Text>
                 <Text color="fg.muted" fontSize="xs">
-                  {income.description}
+                  {concept.description}
                 </Text>
               </VStack>
               <VStack
@@ -265,27 +209,16 @@ export function IncomesPage() {
               >
                 <HStack>
                   <Text color="fg.muted" fontSize="sm">
-                    {income.type}
+                    {concept.status}
                   </Text>
                   <Text color="fg.muted" fontSize="sm">
-                    {income.payment_method}
-                  </Text>
-                  <Text color="fg.muted" fontSize="sm">
-                    {income.reference_number}
-                  </Text>
-                </HStack>
-                <HStack>
-                  <Text fontSize="sm" color="fg.muted">
-                    {new Date(income.income_date).toLocaleDateString()}
+                    {concept.view}
                   </Text>
                 </HStack>
               </VStack>
               <VStack align="start" gap="1" minWidth="8rem" paddingRight="1rem">
-                <Text fontSize="lg" fontWeight="bold" color="green.500">
-                  {formatNumber(income.income_value)}
-                </Text>
                 <Badge colorPalette="blue" size="sm" fontWeight="bold">
-                  {income.project_name}
+                  {concept.project_name}
                 </Badge>
               </VStack>
               <VStack
@@ -307,7 +240,7 @@ export function IncomesPage() {
                       <MenuItem
                         value="edit"
                         onClick={() => {
-                          setFormDefaults(transformData(income));
+                          setFormDefaults(transformData(concept));
                           setFormMode("edit");
                           setOpen(true);
                         }}
@@ -319,7 +252,7 @@ export function IncomesPage() {
                         value="delete"
                         color="fg.error"
                         onClick={() => {
-                          deleteIncomeById(income.id);
+                          deleteConceptById(concept.id);
                         }}
                       >
                         <FiTrash2 />

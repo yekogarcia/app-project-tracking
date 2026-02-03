@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/app/components/auth/ProtectedRoute";
 import { ResponsiveLayout } from "@/app/components/layout/ResponsiveLayout";
 import { ExpensesPage } from "@/modules/expenses/pages/ExpensesPage";
 import { IncomesPage } from "@/modules/incomes/pages/IncomesPage";
+import { ConceptsPage } from "@/modules/concepts/pages/ConceptsPage";
 
 
 export const router = createBrowserRouter([
@@ -35,6 +36,16 @@ export const router = createBrowserRouter([
           <ProtectedRoute>
             <ResponsiveLayout>
               <AdminDashboard />
+            </ResponsiveLayout>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/admin/concepts",
+        element: (
+          <ProtectedRoute requiredRole="ADMIN">
+            <ResponsiveLayout>
+              <ConceptsPage />
             </ResponsiveLayout>
           </ProtectedRoute>
         ),

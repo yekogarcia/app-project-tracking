@@ -41,7 +41,7 @@ export function MobileNavigation({
       <DrawerContent>
         <DrawerHeader borderBottomWidth="1px">
           <Text fontSize="lg" fontWeight="bold" color="fg.emphasized">
-            Project Tracker
+            Project Tracking
           </Text>
           <DrawerCloseTrigger />
         </DrawerHeader>

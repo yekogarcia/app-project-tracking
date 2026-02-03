@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const expenseTypeSchema = z.enum(['COSTO', 'GASTO'], {
-    message: 'El tipo debe ser COSTO o GASTO',
+export const expenseTypeSchema = z.enum(['COSTO', 'GASTO', 'ACTIVO'], {
+    message: 'El tipo debe ser COSTO, GASTO o ACTIVO',
 });
 
 export const descriptionSchema = z.string()

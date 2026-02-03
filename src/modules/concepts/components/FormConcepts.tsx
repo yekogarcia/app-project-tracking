@@ -1,7 +1,6 @@
 import {
   Form,
   InputField,
-  NumberField,
   SelectField,
   TextAreaField,
 } from "@/app/components/ui/forms";
@@ -19,13 +18,12 @@ import { useState, type Dispatch, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Toaster, toaster } from "@/app/components/ux/toaster";
 
-import { expenseSchema, type ExpenseFormData } from "../schemas/schemaExpenses";
-
-import { expensesService } from "@/services/expenses/ExpensesService";
 import type { ISelect } from "@/app";
+import { conceptSchema, type ConceptFormData } from "../schemas/schemaConcepts";
+import { conceptsService } from "@/services/concepts/conceptsService";
 
 interface IFormProps {
-  defaultValues?: Partial<ExpenseFormData>;
+  defaultValues?: Partial<ConceptFormData>;
   /** 📝 Modo del formulario: 'create' | 'edit' */
   mode?: "create" | "edit";
   open: boolean;
@@ -35,7 +33,7 @@ interface IFormProps {
   /** Mostrar el botón trigger interno (por defecto true). Si el trigger se coloca en el padre, pasar false */
 }
 
-export const FormExpenses = ({
+export const FormConcepts = ({
   defaultValues,
   mode = "create",
   open,
@@ -43,65 +41,52 @@ export const FormExpenses = ({
   refreshDashboard,
   projects,
 }: IFormProps) => {
+  //   const { onClose } = useDisclosure();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [concepts, setConcepts] = useState([]);
 
-  const form = useForm<ExpenseFormData>({
-    resolver: zodResolver(expenseSchema),
+  // const { account } = useAuthStore();
+
+  const form = useForm<ConceptFormData>({
+    resolver: zodResolver(conceptSchema),
     defaultValues: defaultValues,
   });
 
+  // When defaultValues change (e.g. edit action), reset the form to load values
   useEffect(() => {
     if (defaultValues) {
       form.reset(defaultValues as any);
     }
   }, [defaultValues]);
 
-  const getConcepts = async (projectId: number) => {
-    const response = await expensesService.getConceptsSelect(projectId);
-
-    if (response.statusCode === 200) {
-      setConcepts(response.data);
-    } else {
-      showToaster({
-        type: "error",
-        description: response.message || "Error al cargar los conceptos",
-        duration: 3000,
-      });
-    }
-  };
-
-  const onChangeType = async () => {
-    const values = form.getValues();
-    if (values.projectId) {
-      getConcepts(values.projectId);
-    } else {
-      showToaster({
-        type: "warn",
-        description: "Selecciona un proyecto",
-        duration: 3000,
-      });
-    }
-  };
+  // const onChangeType = async () => {
+  //   const values = form.getValues();
+  //   if (values.projectId) {
+  //     getConcepts(values.projectId);
+  //   } else {
+  //     showToaster({
+  //       type: "warn",
+  //       description: "Selecciona un proyecto",
+  //       duration: 3000,
+  //     });
+  //   }
+  // };
 
   // If dialog opens in create mode, ensure form is reset to the create defaults
   useEffect(() => {
     if (open && mode === "create") {
       form.reset(defaultValues as any);
-    } else {
-      getConcepts(defaultValues?.projectId || 0);
     }
   }, [open, mode]);
 
   const handleSubmit = async (data: any) => {
     delete data.id;
     setIsSubmitting(true);
-    const response = await expensesService.saveExpense(data, defaultValues?.id);
+    const response = await conceptsService.saveConcept(data, defaultValues?.id);
 
     if (response.statusCode === 200) {
       showToaster({
         type: "success",
-        description: "Egreso creado exitosamente",
+        description: "Concepto guardado exitosamente",
       });
       form.reset();
       setOpen(false);
@@ -109,7 +94,7 @@ export const FormExpenses = ({
     } else {
       showToaster({
         type: "error",
-        description: response.message || "Error al crear el egreso",
+        description: response.message || "Error al crear el concepto",
         duration: 6000,
       });
     }
@@ -126,18 +111,12 @@ export const FormExpenses = ({
     });
   };
 
-  const price = form.watch("price");
-  const quantity = form.watch("quantity");
-
-  useEffect(() => {
-    form.setValue("totalPrice", quantity * price);
-  }, [price, quantity]);
-
   return (
     <>
       <Dialog.Root
         size={{ md: "lg" }}
         open={open}
+        // onOpenChange may provide an object or boolean depending on the dialog implementation
         onOpenChange={(details: any) => {
           const next = typeof details === "boolean" ? details : details?.open;
           setOpen(Boolean(next));
@@ -149,7 +128,7 @@ export const FormExpenses = ({
           <Dialog.Positioner>
             <Dialog.Content>
               <Dialog.Header>
-                <Dialog.Title>Registra un nuevo egreso</Dialog.Title>
+                <Dialog.Title>Registra un nuevo ingreso</Dialog.Title>
               </Dialog.Header>
               <Dialog.Body>
                 <VStack gap="4">
@@ -167,102 +146,50 @@ export const FormExpenses = ({
                       templateColumns={{ base: "1fr", md: "1fr 1fr" }}
                       gap={4}
                     >
+                      <GridItem>
+                        <InputField
+                          name="concept"
+                          control={form.control}
+                          label="Concepto"
+                          placeholder="Concepto"
+                          isRequired
+                          disabled={isSubmitting}
+                        />
+                      </GridItem>
+                      <SelectField
+                        name="status"
+                        control={form.control}
+                        label="Estado"
+                        placeholder="Selecciona el estado"
+                        isRequired
+                        disabled={isSubmitting}
+                        options={[
+                          { value: "ACTIVO", label: "ACTIVO" },
+                          { value: "INACTIVO", label: "INACTIVO" },
+                        ]}
+                      />
+
+                      <SelectField
+                        name="view"
+                        control={form.control}
+                        label="Tipo de vista"
+                        placeholder="Selecciona el tipo"
+                        isRequired
+                        disabled={isSubmitting}
+                        options={[
+                          { value: "PROJECT", label: "PROJECT" },
+                          { value: "COMPANY", label: "COMPANY" },
+                        ]}
+                      />
                       <SelectField
                         name="projectId"
                         control={form.control}
                         label="Proyecto"
                         placeholder="Selecciona el proyecto"
                         isRequired
-                        onChange={onChangeType}
                         disabled={isSubmitting}
                         options={projects}
                       />
-                      <SelectField
-                        name="typeExpense"
-                        control={form.control}
-                        label="Tipo de egreso"
-                        placeholder="Selecciona el tipo"
-                        isRequired
-                        disabled={isSubmitting}
-                        options={[
-                          { value: "COSTO", label: "COSTO" },
-                          { value: "GASTO", label: "GASTO" },
-                          { value: "ACTIVO", label: "ACTIVO" },
-                        ]}
-                      />
-                      <SelectField
-                        name="type"
-                        control={form.control}
-                        label="Tipo"
-                        placeholder="Selecciona el tipo"
-                        isRequired
-                        disabled={isSubmitting}
-                        options={[
-                          { value: "FIJO", label: "FIJO" },
-                          { value: "VARIABLE", label: "VARIABLE" },
-                        ]}
-                      />
-                      <SelectField
-                        name="concept"
-                        control={form.control}
-                        label="Concepto"
-                        placeholder="Selecciona el concepto"
-                        isRequired
-                        disabled={isSubmitting}
-                        options={concepts}
-                      />
-                      <GridItem>
-                        <InputField
-                          name="expense"
-                          control={form.control}
-                          label="Egreso"
-                          placeholder="Egreso"
-                          isRequired
-                          disabled={isSubmitting}
-                        />
-                      </GridItem>
-                      <GridItem>
-                        <InputField
-                          type="number"
-                          name="quantity"
-                          control={form.control}
-                          label="Cantidad"
-                          placeholder="Cantidad"
-                          isRequired
-                          disabled={isSubmitting}
-                        />
-                      </GridItem>
-                      <GridItem>
-                        <NumberField
-                          name="price"
-                          control={form.control}
-                          label="Precio"
-                          placeholder="Precio unitario"
-                          isRequired
-                          disabled={isSubmitting}
-                        />
-                      </GridItem>
-                      <GridItem>
-                        <NumberField
-                          name="totalPrice"
-                          control={form.control}
-                          label="Precio total"
-                          placeholder="Precio total"
-                          isRequired
-                          disabled={true}
-                        />
-                      </GridItem>
-                      <GridItem>
-                        <InputField
-                          name="expenseDate"
-                          type="date"
-                          control={form.control}
-                          label="Fecha de egreso"
-                          placeholder="Fecha de egreso"
-                          isRequired
-                          disabled={isSubmitting}
-                        />
-                      </GridItem>
                       <GridItem>
                         <TextAreaField
                           name="description"

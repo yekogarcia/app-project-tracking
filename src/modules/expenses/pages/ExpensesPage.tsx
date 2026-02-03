@@ -140,9 +140,9 @@ export function ExpensesPage() {
         </Box>
         <HStack gap="3" flexWrap="wrap" width={{ base: "100%", md: "auto" }}>
           <Box width={{ base: "30rem", md: "auto" }}>
-            <NativeSelectRoot 
-              display="flex" 
-              alignItems="center" 
+            <NativeSelectRoot
+              display="flex"
+              alignItems="center"
               flexDirection={{ base: "column", md: "row" }}
               gap={{ base: "3", md: "2" }}
             >
@@ -222,7 +222,7 @@ export function ExpensesPage() {
             pb="2"
           >
             <Text fontSize="sm" color="fg.muted" fontWeight="medium">
-              Valor * mes promedio
+              Total Activos
             </Text>
             <Text fontSize="xl" fontWeight="semibold">
               {formatNumber(totalEgresos * 0.4)}
