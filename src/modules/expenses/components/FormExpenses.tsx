@@ -44,7 +44,8 @@ export const FormExpenses = ({
   projects,
 }: IFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [concepts, setConcepts] = useState([]);
+  const [concepts, setConcepts] = useState<ISelect[]>([]);
+  const [types, setTypes] = useState<ISelect[]>([]);
 
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
@@ -71,7 +72,7 @@ export const FormExpenses = ({
     }
   };
 
-  const onChangeType = async () => {
+  const onChangeConcept = async () => {
     const values = form.getValues();
     if (values.projectId) {
       getConcepts(values.projectId);
@@ -81,6 +82,22 @@ export const FormExpenses = ({
         description: "Selecciona un proyecto",
         duration: 3000,
       });
+    }
+  };
+
+  const onChangeTypes = () => {
+    const values = form.getValues();
+
+    if (values.typeExpense === "ACTIVO") {
+      setTypes([
+        { value: "NO CORRIENTE", label: "NO CORRIENTE" },
+        { value: "CORRIENTE", label: "CORRIENTE" },
+      ]);
+    } else {
+      setTypes([
+        { value: "FIJO", label: "FIJO" },
+        { value: "VARIABLE", label: "VARIABLE" },
+      ]);
     }
   };
 
@@ -97,7 +114,8 @@ export const FormExpenses = ({
     delete data.id;
     setIsSubmitting(true);
     const response = await expensesService.saveExpense(data, defaultValues?.id);
-
+    console.log(response);
+    
     if (response.statusCode === 200) {
       showToaster({
         type: "success",
@@ -173,7 +191,7 @@ export const FormExpenses = ({
                         label="Proyecto"
                         placeholder="Selecciona el proyecto"
                         isRequired
-                        onChange={onChangeType}
+                        onChange={onChangeConcept}
                         disabled={isSubmitting}
                         options={projects}
                       />
@@ -183,6 +201,7 @@ export const FormExpenses = ({
                         label="Tipo de egreso"
                         placeholder="Selecciona el tipo"
                         isRequired
+                        onChange={onChangeTypes}
                         disabled={isSubmitting}
                         options={[
                           { value: "COSTO", label: "COSTO" },
@@ -197,10 +216,7 @@ export const FormExpenses = ({
                         placeholder="Selecciona el tipo"
                         isRequired
                         disabled={isSubmitting}
-                        options={[
-                          { value: "FIJO", label: "FIJO" },
-                          { value: "VARIABLE", label: "VARIABLE" },
-                        ]}
+                        options={types}
                       />
                       <SelectField
                         name="concept"

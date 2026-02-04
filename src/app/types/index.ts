@@ -44,7 +44,7 @@ export type RegisterData = {
 };
 
 export interface ISelect {
-   key: number;
-   value: number;
-   label: string;
+   key?: number | string;
+   value: number | string;
+   label: string | number;
 };

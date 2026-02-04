@@ -20,6 +20,7 @@ import {
   FiEdit,
   FiTrash2,
   FiTrendingDown,
+  FiTrendingUp,
 } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { FormExpenses } from "../components/FormExpenses";
@@ -127,6 +128,32 @@ export function ExpensesPage() {
     0,
   );
 
+  const totalCurrentAssets = filteredExpenses.reduce(
+    (sum, expense) =>
+      expense.type_expense === "ACTIVO" && expense.type === "CORRIENTE"
+        ? sum + parseFloat(expense.total_price)
+        : sum,
+    0,
+  );
+
+  const totalNonCurrentAssets = filteredExpenses.reduce(
+    (sum, expense) =>
+      expense.type_expense === "ACTIVO" && expense.type === "NO CORRIENTE"
+        ? sum + parseFloat(expense.total_price)
+        : sum,
+    0,
+  );
+
+  const getColorType = (type: string) => {
+    if (type === "CORRIENTE") {
+      return "green.500";
+    } else if (type === "NO CORRIENTE") {
+      return "blue.500";
+    } else {
+      return "red.500";
+    }
+  };
+
   return (
     <VStack gap="6" align="stretch">
       <HStack flexWrap="wrap" justify="space-between" align="start">
@@ -186,7 +213,7 @@ export function ExpensesPage() {
         </HStack>
       </HStack>
       <Box>
-        <HStack gap="10">
+        <HStack gap={{ base: "3", md: "4" }} flexWrap="wrap">
           <VStack
             align="start"
             bg="bg.panel"
@@ -194,17 +221,29 @@ export function ExpensesPage() {
             borderWidth="1px"
             borderColor="border.subtle"
             boxShadow="sm"
-            pr="4"
-            pl="4"
-            pt="2"
-            pb="2"
+            px={{ base: "4", md: "6" }}
+            py={{ base: "3", md: "4" }}
+            flex={{
+              base: "1 1 100%",
+              sm: "1 1 calc(50% - 0.75rem)",
+              lg: "1 1 calc(33.333% - 1rem)",
+            }}
+            minW={{ base: "full", sm: "200px" }}
           >
-            <Text fontSize="sm" color="fg.muted" fontWeight="medium">
+            <Text
+              fontSize={{ base: "xs", md: "sm" }}
+              color="fg.muted"
+              fontWeight="bold"
+            >
               Total Egresos
             </Text>
             <HStack>
               <FiTrendingDown color="red" />
-              <Text fontSize="xl" fontWeight="bold" color="red.500">
+              <Text
+                fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
+                fontWeight="bold"
+                color="red.500"
+              >
                 {formatNumber(totalEgresos)}
               </Text>
             </HStack>
@@ -216,21 +255,69 @@ export function ExpensesPage() {
             borderWidth="1px"
             borderColor="border.subtle"
             boxShadow="sm"
-            pr="4"
-            pl="4"
-            pt="2"
-            pb="2"
+            px={{ base: "4", md: "6" }}
+            py={{ base: "3", md: "4" }}
+            flex={{
+              base: "1 1 100%",
+              sm: "1 1 calc(50% - 0.75rem)",
+              lg: "1 1 calc(33.333% - 1rem)",
+            }}
+            minW={{ base: "full", sm: "200px" }}
           >
-            <Text fontSize="sm" color="fg.muted" fontWeight="medium">
-              Total Activos
+            <Text
+              fontSize={{ base: "xs", md: "sm" }}
+              color="fg.muted"
+              fontWeight="bold"
+            >
+              Activos Corrientes
             </Text>
-            <Text fontSize="xl" fontWeight="semibold">
-              {formatNumber(totalEgresos * 0.4)}
+            <HStack>
+              <FiTrendingUp color="green" />
+              <Text
+                fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
+                fontWeight="semibold"
+                color="green.500"
+              >
+                {formatNumber(totalCurrentAssets)}
+              </Text>
+            </HStack>
+          </VStack>
+          <VStack
+            align="start"
+            bg="bg.panel"
+            borderRadius="lg"
+            borderWidth="1px"
+            borderColor="border.subtle"
+            boxShadow="sm"
+            px={{ base: "4", md: "6" }}
+            py={{ base: "3", md: "4" }}
+            flex={{
+              base: "1 1 100%",
+              sm: "1 1 calc(50% - 0.75rem)",
+              lg: "1 1 calc(33.333% - 1rem)",
+            }}
+            minW={{ base: "full", sm: "200px" }}
+          >
+            <Text
+              fontSize={{ base: "xs", md: "sm" }}
+              color="fg.muted"
+              fontWeight="bold"
+            >
+              Activos No Corrientes
             </Text>
+            <HStack>
+              <FiTrendingDown color="blue" />
+              <Text
+                fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
+                fontWeight="semibold"
+                color="blue.500"
+              >
+                {formatNumber(totalNonCurrentAssets)}
+              </Text>
+            </HStack>
           </VStack>
         </HStack>
       </Box>
-
       {/* Egresos List */}
       <VStack gap="3" align="stretch">
         {filteredExpenses.map((exp) => (
@@ -289,7 +376,11 @@ export function ExpensesPage() {
                 </HStack>
               </VStack>
               <VStack align="start" gap="1" minWidth="8rem" paddingRight="1rem">
-                <Text fontSize="lg" fontWeight="bold" color="red.500">
+                <Text
+                  fontSize="lg"
+                  fontWeight="bold"
+                  color={getColorType(exp.type)}
+                >
                   {formatNumber(exp.total_price)}
                 </Text>
                 <Badge colorPalette="blue" size="sm" fontWeight="bold">

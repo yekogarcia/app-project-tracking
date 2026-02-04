@@ -1,3 +1,4 @@
+import type { ISelect } from "@/app/types";
 import {
   Field,
   NativeSelectRoot,
@@ -12,10 +13,6 @@ import {
   type FieldValues,
 } from "react-hook-form";
 
-interface SelectOption {
-  value: string | number;
-  label: string;
-}
 
 interface SelectFieldProps<T extends FieldValues = FieldValues> extends Omit<
   NativeSelectRootProps,
@@ -26,7 +23,7 @@ interface SelectFieldProps<T extends FieldValues = FieldValues> extends Omit<
   label?: string;
   helperText?: string;
   isRequired?: boolean;
-  options: SelectOption[];
+  options: ISelect[];
   placeholder?: string;
 }
 

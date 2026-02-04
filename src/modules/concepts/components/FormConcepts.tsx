@@ -186,7 +186,7 @@ export const FormConcepts = ({
                         control={form.control}
                         label="Proyecto"
                         placeholder="Selecciona el proyecto"
-                        isRequired
+                        isRequired={false}
                         disabled={isSubmitting}
                         options={projects}
                       />
