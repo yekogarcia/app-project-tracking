@@ -72,8 +72,9 @@ export function ConceptsPage() {
     };
   };
 
-  const deleteConceptById = async (id: any) => {
+  const deleteConceptById = async (id: number) => {
     const resp = await conceptsService.deleteConcept(id);
+
     if (resp.statusCode === 200) {
       showToaster({
         type: "success",

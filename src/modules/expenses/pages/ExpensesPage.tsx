@@ -123,6 +123,7 @@ export function ExpensesPage() {
     ? expenses.filter((expense) => expense.project_id == selectedProject)
     : expenses;
 
+
   const totalEgresos = filteredExpenses.reduce(
     (sum, expense) => sum + parseFloat(expense.total_price),
     0,
@@ -403,27 +404,31 @@ export function ExpensesPage() {
                       </IconButton>
                     </MenuTrigger>
                     <MenuContent>
-                      <MenuItem
-                        value="edit"
-                        onClick={() => {
-                          setFormDefaults(transformData(exp));
-                          setFormMode("edit");
-                          setOpen(true);
-                        }}
-                      >
-                        <FiEdit />
-                        Editar
-                      </MenuItem>
-                      <MenuItem
-                        value="delete"
-                        color="fg.error"
-                        onClick={() => {
-                          deleteExpenseById(exp.id);
-                        }}
-                      >
-                        <FiTrash2 />
-                        Eliminar
-                      </MenuItem>
+                      {exp.status === "ACTIVE" && (
+                        <>
+                          <MenuItem
+                            value="edit"
+                            onClick={() => {
+                              setFormDefaults(transformData(exp));
+                              setFormMode("edit");
+                              setOpen(true);
+                            }}
+                          >
+                            <FiEdit />
+                            Editar
+                          </MenuItem>
+                          <MenuItem
+                            value="delete"
+                            color="fg.error"
+                            onClick={() => {
+                              deleteExpenseById(exp.id);
+                            }}
+                          >
+                            <FiTrash2 />
+                            Eliminar
+                          </MenuItem>
+                        </>
+                      )}
                     </MenuContent>
                   </MenuRoot>
                 </HStack>
