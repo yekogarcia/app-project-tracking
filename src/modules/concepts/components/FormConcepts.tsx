@@ -43,6 +43,10 @@ export const FormConcepts = ({
 }: IFormProps) => {
   //   const { onClose } = useDisclosure();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [view, setView] = useState<"COMPANY" | "PROJECT">(
+    defaultValues?.view || "COMPANY",
+  );
+  const [required, setRequired] = useState(false);
 
   // const { account } = useAuthStore();
 
@@ -55,30 +59,31 @@ export const FormConcepts = ({
   useEffect(() => {
     if (defaultValues) {
       form.reset(defaultValues as any);
+      // set local UI state based on incoming values
+      if (defaultValues.view) {
+        setView(defaultValues.view);
+        setRequired(defaultValues.view === "PROJECT");
+      }
     }
   }, [defaultValues]);
 
-  // const onChangeType = async () => {
-  //   const values = form.getValues();
-  //   if (values.projectId) {
-  //     getConcepts(values.projectId);
-  //   } else {
-  //     showToaster({
-  //       type: "warn",
-  //       description: "Selecciona un proyecto",
-  //       duration: 3000,
-  //     });
-  //   }
-  // };
+  const onChangeView = async () => {
+    const values = form.getValues();
+    setView(values.view);
+    setRequired(values.view === "PROJECT");
+  };
 
   // If dialog opens in create mode, ensure form is reset to the create defaults
   useEffect(() => {
     if (open && mode === "create") {
       form.reset(defaultValues as any);
+      setView(defaultValues?.view || "COMPANY");
+      setRequired(false);
     }
   }, [open, mode]);
 
   const handleSubmit = async (data: any) => {
+    
     delete data.id;
     setIsSubmitting(true);
     const response = await conceptsService.saveConcept(data, defaultValues?.id);
@@ -176,20 +181,23 @@ export const FormConcepts = ({
                         placeholder="Selecciona el tipo"
                         isRequired
                         disabled={isSubmitting}
+                        onChange={onChangeView}
                         options={[
                           { value: "PROJECT", label: "PROJECT" },
                           { value: "COMPANY", label: "COMPANY" },
                         ]}
                       />
-                      <SelectField
-                        name="projectId"
-                        control={form.control}
-                        label="Proyecto"
-                        placeholder="Selecciona el proyecto"
-                        isRequired={false}
-                        disabled={isSubmitting}
-                        options={projects}
-                      />
+                      {view === "PROJECT" && (
+                        <SelectField
+                          name="projectId"
+                          control={form.control}
+                          label="Proyecto"
+                          placeholder="Selecciona el proyecto"
+                          isRequired={required}
+                          disabled={isSubmitting}
+                          options={projects}
+                        />
+                      )}
                       <GridItem>
                         <TextAreaField
                           name="description"

@@ -11,7 +11,7 @@ class ConceptsService {
 
     async saveConcept(data: ConceptFormData, id?: number) {
         const url = id ? `/concepts/${id}` : '/concepts';
-        const method = id ? 'PUT' : 'POST';
+        const method = id ? 'PATCH' : 'POST';
 
         const resp = await useFetch(url, {
             method,

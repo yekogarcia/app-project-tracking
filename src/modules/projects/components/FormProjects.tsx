@@ -109,8 +109,6 @@ const FormProjects = ({
   };
 
   const handleSubmit = async (data: any) => {
-    console.log(data);
-    console.log(defaultValues);
     delete data.id;
     setIsSubmitting(true);
     const response = await projectsService.saveProject(data, defaultValues?.id);

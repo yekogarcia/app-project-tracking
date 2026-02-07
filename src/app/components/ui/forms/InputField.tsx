@@ -33,9 +33,6 @@ export function InputField<T extends FieldValues = FieldValues>({
     control,
   });
 
-  // console.log("control", control);
-  // console.log("inputProps", inputProps);
-  // field.onChange(event);
 
   return (
     <Field.Root invalid={invalid} required={isRequired}>

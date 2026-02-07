@@ -56,11 +56,20 @@ export const FormExpenses = ({
     if (defaultValues) {
       form.reset(defaultValues as any);
     }
+    onChangeTypes();
+    onChangeConcept();
   }, [defaultValues]);
+
+   // If dialog opens in create mode, ensure form is reset to the create defaults
+  useEffect(() => {
+    if (open && mode === "create") {
+      form.reset(defaultValues as any);
+    }
+  }, [open, mode]);
+
 
   const getConcepts = async (projectId: number) => {
     const response = await expensesService.getConceptsSelect(projectId);
-
     if (response.statusCode === 200) {
       setConcepts(response.data);
     } else {
@@ -101,21 +110,12 @@ export const FormExpenses = ({
     }
   };
 
-  // If dialog opens in create mode, ensure form is reset to the create defaults
-  useEffect(() => {
-    if (open && mode === "create") {
-      form.reset(defaultValues as any);
-    } else {
-      getConcepts(defaultValues?.projectId || 0);
-    }
-  }, [open, mode]);
-
+ 
   const handleSubmit = async (data: any) => {
     delete data.id;
     setIsSubmitting(true);
     const response = await expensesService.saveExpense(data, defaultValues?.id);
-    console.log(response);
-    
+
     if (response.statusCode === 200) {
       showToaster({
         type: "success",

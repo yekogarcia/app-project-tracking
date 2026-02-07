@@ -44,6 +44,8 @@ export function SelectField<T extends FieldValues = FieldValues>({
     name,
     control,
   });
+  console.log(error);
+  
 
   return (
     <Field.Root invalid={invalid} required={isRequired}>

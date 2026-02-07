@@ -14,6 +14,7 @@ import { FiMenu, FiUser, FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { authService } from "@/services/auth/AuthService";
 
 interface TopBarProps {
   onMenuClick?: () => void;
@@ -24,8 +25,9 @@ export function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
   const navigate = useNavigate();
   const { account, logout } = useAuthStore();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     logout();
+    await authService.logout();
     navigate("/login");
   };
 

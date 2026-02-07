@@ -80,7 +80,7 @@ export function RegisterForm({
       
       const resp = await service.registerCompanyAndUser(data);
 
-      if (resp.statusCode === 201) {
+      if (resp.statusCode === 200) {
         setSuccessMessage(
           "¡Registro exitoso! Redirigiendo al inicio de sesión..."
         );
@@ -98,7 +98,6 @@ export function RegisterForm({
       );
       console.error("Error en registro:", err);
     } finally {
-      // Detener loading
       setIsSubmitting(false);
     }
   };

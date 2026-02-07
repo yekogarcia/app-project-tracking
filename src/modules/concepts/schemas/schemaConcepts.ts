@@ -14,9 +14,17 @@ export const conceptSchema = z
         concept: z.string().min(1, 'El nombre del concepto es requerido'),
         view: z.enum(['COMPANY', 'PROJECT'], {
             message: 'El tipo debe ser COMPANY o PROJECT',
-        }).optional(),
-        projectId: z.number().min(1, 'El proyecto es requerido'),
+        }),
+        projectId: z.number().optional(),
         description: descriptionSchema,
     })
+    .refine(
+        (data) =>
+            data.view !== 'PROJECT' || Boolean(data.projectId),
+        {
+            message: 'Debe seleccionar un proyecto',
+            path: ['projectId'],
+        }
+    );
 
 export type ConceptFormData = z.infer<typeof conceptSchema>;

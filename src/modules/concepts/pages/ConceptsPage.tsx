@@ -67,7 +67,7 @@ export function ConceptsPage() {
       concept: concept.concept,
       status: concept.status,
       view: concept.view,
-      projectId: concept.project_id,
+      projectId: concept.project_id || undefined,
       description: concept.description,
     };
   };
