@@ -43,8 +43,8 @@ export const FormConcepts = ({
 }: IFormProps) => {
   //   const { onClose } = useDisclosure();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [view, setView] = useState<"COMPANY" | "PROJECT">(
-    defaultValues?.view || "COMPANY",
+  const [view, setView] = useState<"SYSTEM" | "PROJECT">(
+    defaultValues?.view || "SYSTEM",
   );
   const [required, setRequired] = useState(false);
 
@@ -77,7 +77,7 @@ export const FormConcepts = ({
   useEffect(() => {
     if (open && mode === "create") {
       form.reset(defaultValues as any);
-      setView(defaultValues?.view || "COMPANY");
+      setView(defaultValues?.view || "SYSTEM");
       setRequired(false);
     }
   }, [open, mode]);
@@ -184,7 +184,7 @@ export const FormConcepts = ({
                         onChange={onChangeView}
                         options={[
                           { value: "PROJECT", label: "PROJECT" },
-                          { value: "COMPANY", label: "COMPANY" },
+                          { value: "SYSTEM", label: "SYSTEM" },
                         ]}
                       />
                       {view === "PROJECT" && (

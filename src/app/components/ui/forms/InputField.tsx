@@ -25,6 +25,7 @@ export function InputField<T extends FieldValues = FieldValues>({
   isRequired,
   ...inputProps
 }: InputFieldProps<T>) {
+  
   const {
     field,
     fieldState: { error, invalid },
@@ -39,16 +40,6 @@ export function InputField<T extends FieldValues = FieldValues>({
       {label && <Field.Label>{label}</Field.Label>}
       <Input
         {...field}
-        {...inputProps}
-        onChange={(e) => {
-          if (inputProps.type === "number") {
-            field.onChange(
-              e.target.value === "" ? undefined : parseInt(e.target.value),
-            );
-          } else {
-            field.onChange(e.target.value);
-          }
-        }}
         outline="none"
         size={{ base: "md", md: "md" }}
         borderColor={{ base: "gray.300", _dark: "gray.600" }}
@@ -60,6 +51,16 @@ export function InputField<T extends FieldValues = FieldValues>({
           boxShadow: "0 0 0 1px #3182ce",
         }}
         bg={{ base: "white", _dark: "gray.700" }}
+        {...inputProps}
+        onChange={(e) => {
+          if (inputProps.type === "number") {
+            field.onChange(
+              e.target.value === "" ? undefined : parseInt(e.target.value),
+            );
+          } else {
+            field.onChange(e.target.value);
+          }
+        }}
       />
       {error && <Field.ErrorText>{error.message}</Field.ErrorText>}
       {helperText && !error && (

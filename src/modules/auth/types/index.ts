@@ -2,6 +2,7 @@ export interface IAccount {
   id: number;
   name: string;
   email: string;
+  phone: string;
   role: string;
   company: any;
   avatar?: string;

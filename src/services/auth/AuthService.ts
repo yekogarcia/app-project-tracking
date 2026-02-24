@@ -79,6 +79,7 @@ class AuthService {
             throw new Error(error instanceof Error ? error.message : 'Unknown error during logout');
         }
     }
+
 }
 
 export const authService = new AuthService();

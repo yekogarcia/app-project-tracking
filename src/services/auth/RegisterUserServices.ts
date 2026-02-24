@@ -5,6 +5,8 @@ class RegisterUserService {
     constructor() { }
 
     async registerCompanyAndUser(data: any) {
+        console.log("registerCompanyAndUser", data);
+        
         delete data.confirmPassword;
         const resp = await useFetch('/company/preregister', {
             method: 'POST',

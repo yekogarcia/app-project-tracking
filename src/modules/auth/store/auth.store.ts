@@ -4,6 +4,7 @@ import type { IAccount, IStoreAuth } from "../types";
 const valuesAuthStore = {
   id: 0,
   name: '',
+  phone: '',
   email: '',
   role: '',
   company: {}

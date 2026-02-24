@@ -12,8 +12,8 @@ export const conceptSchema = z
             message: 'El tipo debe ser ACTIVO o INACTIVO',
         }),
         concept: z.string().min(1, 'El nombre del concepto es requerido'),
-        view: z.enum(['COMPANY', 'PROJECT'], {
-            message: 'El tipo debe ser COMPANY o PROJECT',
+        view: z.enum(['SYSTEM', 'PROJECT'], {
+            message: 'El tipo debe ser SYSTEM o PROJECT',
         }),
         projectId: z.number().optional(),
         description: descriptionSchema,

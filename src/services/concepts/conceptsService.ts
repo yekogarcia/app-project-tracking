@@ -15,9 +15,6 @@ class ConceptsService {
 
         const resp = await useFetch(url, {
             method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(data),
         });
 

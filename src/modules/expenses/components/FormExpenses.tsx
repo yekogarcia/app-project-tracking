@@ -252,8 +252,8 @@ export const FormExpenses = ({
                         <NumberField
                           name="price"
                           control={form.control}
-                          label="Precio"
-                          placeholder="Precio unitario"
+                          label="Valor egreso"
+                          placeholder="Valor egreso unitario"
                           isRequired
                           disabled={isSubmitting}
                         />
@@ -262,8 +262,8 @@ export const FormExpenses = ({
                         <NumberField
                           name="totalPrice"
                           control={form.control}
-                          label="Precio total"
-                          placeholder="Precio total"
+                          label="Total egresos"
+                          placeholder="Total egresos"
                           isRequired
                           disabled={true}
                         />

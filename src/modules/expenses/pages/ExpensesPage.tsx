@@ -108,14 +108,15 @@ export function ExpensesPage() {
 
     if (response.statusCode === 200) {
       setProjects(response.data);
-    } else {
-      showToaster({
-        type: "error",
-        description:
-          response.message || "Error al cargar los proyectos de egreso",
-        duration: 3000,
-      });
-    }
+    } 
+    // else {
+    //   showToaster({
+    //     type: "error",
+    //     description:
+    //       response.message || "Error al cargar los proyectos de egreso",
+    //     duration: 3000,
+    //   });
+    // }
   };
 
   // Filter egresos by selected project
