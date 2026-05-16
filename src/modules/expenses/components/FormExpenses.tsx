@@ -115,7 +115,6 @@ export const FormExpenses = ({
     delete data.id;
     setIsSubmitting(true);
     const response = await expensesService.saveExpense(data, defaultValues?.id);
-
     if (response.statusCode === 200) {
       showToaster({
         type: "success",

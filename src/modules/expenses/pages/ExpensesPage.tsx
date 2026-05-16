@@ -49,6 +49,7 @@ export function ExpensesPage() {
   const [formDefaults, setFormDefaults] = useState<any>(formDefaultsValues);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [projects, setProjects] = useState<ISelect[]>([]);
+  const [parentId, setParentId] = useState<number | null>(null);
 
   useEffect(() => {
     getAllExpenses();
@@ -108,7 +109,7 @@ export function ExpensesPage() {
 
     if (response.statusCode === 200) {
       setProjects(response.data);
-    } 
+    }
     // else {
     //   showToaster({
     //     type: "error",
@@ -120,10 +121,14 @@ export function ExpensesPage() {
   };
 
   // Filter egresos by selected project
-  const filteredExpenses = selectedProject
-    ? expenses.filter((expense) => expense.project_id == selectedProject)
-    : expenses;
+  // console.log("selectedProject", selectedProject);
+  // console.log("parentId", parentId);
+  // console.log("expenses", expenses);
+  // console.log("projects", projects);
 
+  const filteredExpenses = selectedProject
+    ? expenses.filter((expense) => expense.project_id == selectedProject || (parentId && expense.parent_id == parentId))
+    : expenses;
 
   const totalEgresos = filteredExpenses.reduce(
     (sum, expense) => sum + parseFloat(expense.total_price),
@@ -156,6 +161,12 @@ export function ExpensesPage() {
     }
   };
 
+  const onSelectedProject = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedProject(e.target.value);
+    const parent = projects.find((p) => p.parentId == e.target.value)?.parentId;
+    setParentId(parent ? parent : null);
+  };
+
   return (
     <VStack gap="6" align="stretch">
       <HStack flexWrap="wrap" justify="space-between" align="start">
@@ -180,7 +191,7 @@ export function ExpensesPage() {
                 w={{ base: "100%", md: "14rem" }}
                 mr={{ base: "0", md: "2" }}
                 value={selectedProject}
-                onChange={(e) => setSelectedProject(e.target.value)}
+                onChange={(e) => onSelectedProject(e)}
                 placeholder="Todos los proyectos"
               >
                 {projects.map((project) => (
