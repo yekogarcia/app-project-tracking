@@ -27,7 +27,7 @@ import { FormExpenses } from "../components/FormExpenses";
 import { expensesService } from "@/services/expenses/ExpensesService";
 // import type { GiReturnArrow } from "react-icons/gi";
 import { IoMdAdd } from "react-icons/io";
-import { formatDate, formatNumber, showToaster } from "@/app/utils/utils";
+import { formatDate, formatDateShort, formatNumber, showToaster } from "@/app/utils/utils";
 import { projectsService } from "@/services/projects/ProjectsService";
 import type { ISelect } from "@/app";
 
@@ -384,7 +384,7 @@ export function ExpensesPage() {
                 </HStack>
                 <HStack>
                   <Text fontSize="sm" color="fg.muted">
-                    {new Date(exp.expense_date).toLocaleDateString()}
+                    {formatDateShort(exp.expense_date)}
                   </Text>
                 </HStack>
               </VStack>

@@ -1,4 +1,5 @@
 import { toaster } from "@/app/components/ux/toaster";
+import { parseISO, format, isValid } from 'date-fns';
 
 export const showToaster = ({ type, description, duration = 3000 }: any) => {
     toaster.create({
@@ -10,17 +11,17 @@ export const showToaster = ({ type, description, duration = 3000 }: any) => {
 };
 
 export const formatDateShort = (dateString: string): string => {
-    const date = new Date(dateString);
-    const formattedDate = date.toLocaleDateString('en-CA');
-    return formattedDate;
-}
+    const date = parseISO(dateString);
+    if (!isValid(date)) return "";
+    return format(date, 'yyyy-MM-dd');
+};
 
-export const formatDate = (d: any) => {
+export const formatDate = (d: any): string => {
     try {
         if (!d) return "";
-        const dt = new Date(d);
-        if (isNaN(dt.getTime())) return "";
-        return dt.toISOString().slice(0, 10);
+        const date = typeof d === 'string' ? parseISO(d) : d;
+        if (!isValid(date)) return "";
+        return format(date, 'yyyy-MM-dd');
     } catch (e) {
         return "";
     }
