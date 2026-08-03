@@ -27,7 +27,8 @@ import {
 // import { ProjectsService } from "@/services/projects/ProjectsService";
 
 import { projectsService } from "@/services/projects/ProjectsService";
-// import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { statusProject } from "@/app/utils/constans";
+// import { useAuthStore } from "@/modules/auth/store/auth.store";  
 
 interface IFormProps {
   defaultValues?: Partial<ProjectsFormData>;
@@ -219,13 +220,7 @@ const FormProjects = ({
                           placeholder="Selecciona el estado"
                           isRequired
                           disabled={isSubmitting}
-                          options={[
-                            { value: "ACTIVE", label: "ACTIVE" },
-                            // { value: "RUNNING", label: "RUNNING" },
-                            { value: "SUSPENDED", label: "SUSPENDED" },
-                            { value: "CANCELED", label: "CANCELED" },
-                            { value: "COMPLETED", label: "COMPLETED" },
-                          ]}
+                          options={statusProject}
                         />
                       </GridItem>
                       <GridItem>

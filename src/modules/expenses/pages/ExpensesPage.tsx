@@ -30,6 +30,7 @@ import { IoMdAdd } from "react-icons/io";
 import { formatDate, formatDateShort, formatNumber, showToaster } from "@/app/utils/utils";
 import { projectsService } from "@/services/projects/ProjectsService";
 import type { ISelect } from "@/app";
+import { statusProject } from "@/app/utils/constans";
 
 const formDefaultsValues = {
   typeExpense: "COSTO",
@@ -62,6 +63,8 @@ export function ExpensesPage() {
 
   const getAllExpenses = async () => {
     const resp = await expensesService.getExpenses();
+    console.log("getAllExpenses", resp);
+    
     if (resp.statusCode !== 200) {
       showToaster({
         type: "warning",
@@ -106,6 +109,8 @@ export function ExpensesPage() {
 
   const getProjects = async () => {
     const response = await projectsService.getProjects("ALL");
+    console.log("getProjects", response);
+    
 
     if (response.statusCode === 200) {
       setProjects(response.data);
@@ -132,6 +137,22 @@ export function ExpensesPage() {
 
   const totalEgresos = filteredExpenses.reduce(
     (sum, expense) => sum + parseFloat(expense.total_price),
+    0,
+  );
+
+  const totalOperatingExpenses = filteredExpenses.reduce(
+    (sum, expense) => 
+      expense.type_expense !== 'ACTIVO' ? 
+      sum + parseFloat(expense.total_price)
+      : sum,
+    0,
+  );
+
+  const totalOperatingExpensesAndcurrents = filteredExpenses.reduce(
+    (sum, expense) => 
+      expense.type !== "NO CORRIENTE" ? 
+      sum + parseFloat(expense.total_price)
+      : sum,
     0,
   );
 
@@ -192,6 +213,20 @@ export function ExpensesPage() {
                 mr={{ base: "0", md: "2" }}
                 value={selectedProject}
                 onChange={(e) => onSelectedProject(e)}
+                placeholder="Selecciona el estado"
+              >
+                {statusProject.map((status) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+                ))}
+              </NativeSelectField>
+              <NativeSelectField
+                minW={{ base: "100%", md: "10rem" }}
+                w={{ base: "100%", md: "14rem" }}
+                mr={{ base: "0", md: "2" }}
+                value={selectedProject}
+                onChange={(e) => onSelectedProject(e)}
                 placeholder="Todos los proyectos"
               >
                 {projects.map((project) => (
@@ -239,7 +274,7 @@ export function ExpensesPage() {
             flex={{
               base: "1 1 100%",
               sm: "1 1 calc(50% - 0.75rem)",
-              lg: "1 1 calc(33.333% - 1rem)",
+              lg: "1 1 calc(20% - 1rem)",
             }}
             minW={{ base: "full", sm: "200px" }}
           >
@@ -273,7 +308,75 @@ export function ExpensesPage() {
             flex={{
               base: "1 1 100%",
               sm: "1 1 calc(50% - 0.75rem)",
-              lg: "1 1 calc(33.333% - 1rem)",
+              lg: "1 1 calc(20% - 1rem)",
+            }}
+            minW={{ base: "full", sm: "200px" }}
+          >
+            <Text
+              fontSize={{ base: "xs", md: "sm" }}
+              color="fg.muted"
+              fontWeight="bold"
+            >
+              Egresos operativos y corrientes
+            </Text>
+            <HStack>
+              <FiTrendingDown color="red" />
+              <Text
+                fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
+                fontWeight="bold"
+                color="red.500"
+              >
+                {formatNumber(totalOperatingExpensesAndcurrents)}
+              </Text>
+            </HStack>
+          </VStack>
+          <VStack
+            align="start"
+            bg="bg.panel"
+            borderRadius="lg"
+            borderWidth="1px"
+            borderColor="border.subtle"
+            boxShadow="sm"
+            px={{ base: "4", md: "6" }}
+            py={{ base: "3", md: "4" }}
+            flex={{
+              base: "1 1 100%",
+              sm: "1 1 calc(50% - 0.75rem)",
+              lg: "1 1 calc(20% - 1rem)",
+            }}
+            minW={{ base: "full", sm: "200px" }}
+          >
+            <Text
+              fontSize={{ base: "xs", md: "sm" }}
+              color="fg.muted"
+              fontWeight="bold"
+            >
+              Egresos operativos
+            </Text>
+            <HStack>
+              <FiTrendingDown color="red" />
+              <Text
+                fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
+                fontWeight="bold"
+                color="red.500"
+              >
+                {formatNumber(totalOperatingExpenses)}
+              </Text>
+            </HStack>
+          </VStack>
+          <VStack
+            align="start"
+            bg="bg.panel"
+            borderRadius="lg"
+            borderWidth="1px"
+            borderColor="border.subtle"
+            boxShadow="sm"
+            px={{ base: "4", md: "6" }}
+            py={{ base: "3", md: "4" }}
+            flex={{
+              base: "1 1 100%",
+              sm: "1 1 calc(50% - 0.75rem)",
+              lg: "1 1 calc(20% - 1rem)",
             }}
             minW={{ base: "full", sm: "200px" }}
           >
@@ -307,7 +410,7 @@ export function ExpensesPage() {
             flex={{
               base: "1 1 100%",
               sm: "1 1 calc(50% - 0.75rem)",
-              lg: "1 1 calc(33.333% - 1rem)",
+              lg: "1 1 calc(20% - 1rem)",
             }}
             minW={{ base: "full", sm: "200px" }}
           >
