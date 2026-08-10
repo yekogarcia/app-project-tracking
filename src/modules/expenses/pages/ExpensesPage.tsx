@@ -63,8 +63,6 @@ export function ExpensesPage() {
 
   const getAllExpenses = async () => {
     const resp = await expensesService.getExpenses();
-    console.log("getAllExpenses", resp);
-    
     if (resp.statusCode !== 200) {
       showToaster({
         type: "warning",
@@ -126,8 +124,8 @@ export function ExpensesPage() {
   };
 
   // Filter egresos by selected project
-  // console.log("selectedProject", selectedProject);
-  // console.log("parentId", parentId);
+  console.log("selectedProject", selectedProject);
+  console.log("parentId", parentId);
   // console.log("expenses", expenses);
   // console.log("projects", projects);
 
@@ -148,13 +146,13 @@ export function ExpensesPage() {
     0,
   );
 
-  const totalOperatingExpensesAndcurrents = filteredExpenses.reduce(
-    (sum, expense) => 
-      expense.type !== "NO CORRIENTE" ? 
-      sum + parseFloat(expense.total_price)
-      : sum,
-    0,
-  );
+  // const totalOperatingExpensesAndcurrents = filteredExpenses.reduce(
+  //   (sum, expense) => 
+  //     expense.type !== "NO CORRIENTE" ? 
+  //     sum + parseFloat(expense.total_price)
+  //     : sum,
+  //   0,
+  // );
 
   const totalCurrentAssets = filteredExpenses.reduce(
     (sum, expense) =>
@@ -293,40 +291,6 @@ export function ExpensesPage() {
                 color="red.500"
               >
                 {formatNumber(totalEgresos)}
-              </Text>
-            </HStack>
-          </VStack>
-          <VStack
-            align="start"
-            bg="bg.panel"
-            borderRadius="lg"
-            borderWidth="1px"
-            borderColor="border.subtle"
-            boxShadow="sm"
-            px={{ base: "4", md: "6" }}
-            py={{ base: "3", md: "4" }}
-            flex={{
-              base: "1 1 100%",
-              sm: "1 1 calc(50% - 0.75rem)",
-              lg: "1 1 calc(20% - 1rem)",
-            }}
-            minW={{ base: "full", sm: "200px" }}
-          >
-            <Text
-              fontSize={{ base: "xs", md: "sm" }}
-              color="fg.muted"
-              fontWeight="bold"
-            >
-              Egresos operativos y corrientes
-            </Text>
-            <HStack>
-              <FiTrendingDown color="red" />
-              <Text
-                fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
-                fontWeight="bold"
-                color="red.500"
-              >
-                {formatNumber(totalOperatingExpensesAndcurrents)}
               </Text>
             </HStack>
           </VStack>

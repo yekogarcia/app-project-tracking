@@ -27,9 +27,19 @@ export const formatDate = (d: any): string => {
     }
 };
 
- export const formatNumber = (value: number) => {
+export const formatNumber = (value: number) => {
     return new Intl.NumberFormat("es-CO", {
-      style: "currency",
-      currency: "COP",
+        style: "currency",
+        currency: "COP",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     }).format(value);
-  };
+};
+
+export const formatPorcentage = (value: number) => {
+  return new Intl.NumberFormat("es-CO", {
+    style: "percent",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value / 100);
+};

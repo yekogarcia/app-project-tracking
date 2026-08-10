@@ -31,6 +31,15 @@ class ProjectsService {
         return resp;
     }
 
+    async getAllTotals(query: string) {
+        console.log("getAllTotals query", query);
+        
+        const resp = await useFetch(`/projects/totals-expenses-incomes?${query}`, {
+            method: 'GET',
+        });
+        return resp;
+    }
+
     async deleteProject(id: number) {
         const resp = await useFetch(`/projects/${id}`, {
             method: 'DELETE',
