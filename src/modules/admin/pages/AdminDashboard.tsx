@@ -35,7 +35,8 @@ export function AdminDashboard() {
     netMargin: 0,
     grossProfit: 0,
     grossMargin: 0,
-    Profitability: 0,
+    profitability: 0,
+    roi: 0
   });
 
   const [selectedProject, setSelectedProject] = useState<string>("");
@@ -78,14 +79,16 @@ export function AdminDashboard() {
   const calculateValues = () => {
     let totalIncomes = 0;
     let totalExpenses = 0;
+    let totalTypeCosts = 0;
     let netProfit = 0;
     let grossProfit = 0;
     totals?.map((total: any) => {
       totalIncomes += Number(total.totalIncomes);
       totalExpenses += Number(total.totalExpenses);
+      totalTypeCosts += Number(total.totalTypeCosts);
     });
     netProfit = totalIncomes - totalExpenses;
-    grossProfit = totalIncomes - totalExpenses;
+    grossProfit = totalIncomes - totalTypeCosts;
     setValues({
       totalIncomes,
       totalExpenses,
@@ -93,7 +96,8 @@ export function AdminDashboard() {
       netMargin: totalExpenses !== 0 ? netProfit / totalIncomes * 100 : 0,
       grossProfit,
       grossMargin: totalIncomes !== 0 ? grossProfit / totalIncomes * 100 : 0,
-      Profitability: totalIncomes !== 0 ? (netProfit / totalIncomes) * 100 : 0,
+      profitability: totalIncomes !== 0 ? (netProfit / totalIncomes) * 100 : 0,
+      roi: totalIncomes !== 0 ? (netProfit / totalExpenses) * 100 : 0,
     });
   };
 
@@ -285,7 +289,7 @@ export function AdminDashboard() {
           </Box>
         </GridItem>
 
-        {/* <GridItem>
+        <GridItem>
           <Box
             bg={{ base: "white", _dark: "gray.800" }}
             borderRadius="lg"
@@ -306,23 +310,16 @@ export function AdminDashboard() {
                   fontWeight="bold"
                   color={{ base: "gray.900", _dark: "white" }}
                 >
-                  {formatNumber(values.totalExpenses)}
+                  {formatNumber(values.grossProfit)}
                 </Text>
-                <Text fontSize="sm" color="red.500">
-                  ↘ 4.05%
-                </Text>
+                 {getIndicatorsPorcentajes(values.grossMargin)}
               </Box>
-              <Icon
-                as={FiTrendingDown}
-                boxSize="8"
-                color="red.500"
-                bg={{ base: "red.50", _dark: "red.900" }}
-                p="2"
-                borderRadius="md"
-              />
+              {
+                getIconIndicator(values.grossProfit)
+              }
             </HStack>
           </Box>
-        </GridItem> */}
+        </GridItem>
 
         <GridItem>
           <Box
@@ -351,6 +348,70 @@ export function AdminDashboard() {
               </Box>
               {
                 getIconIndicator(values.netProfit)
+              }
+            </HStack>
+          </Box>
+        </GridItem>
+
+        <GridItem>
+          <Box
+            bg={{ base: "white", _dark: "gray.800" }}
+            borderRadius="lg"
+            borderWidth="1px"
+            borderColor={{ base: "gray.200", _dark: "gray.700" }}
+            p="6"
+          >
+            <HStack justify="space-between" align="start">
+              <Box>
+                <Text
+                  fontSize="sm"
+                  color={{ base: "gray.600", _dark: "gray.400" }}
+                >
+                  Rentabilidad
+                </Text>
+                <Text
+                  fontSize="2xl"
+                  fontWeight="bold"
+                  color={{ base: "gray.900", _dark: "white" }}
+                >
+                  {formatPorcentage(values.profitability)}
+                </Text>
+                {/* {getIndicatorsPorcentajes(values.netMargin)} */}
+              </Box>
+              {
+                getIconIndicator(values.profitability)
+              }
+            </HStack>
+          </Box>
+        </GridItem>
+
+        <GridItem>
+          <Box
+            bg={{ base: "white", _dark: "gray.800" }}
+            borderRadius="lg"
+            borderWidth="1px"
+            borderColor={{ base: "gray.200", _dark: "gray.700" }}
+            p="6"
+          >
+            <HStack justify="space-between" align="start">
+              <Box>
+                <Text
+                  fontSize="sm"
+                  color={{ base: "gray.600", _dark: "gray.400" }}
+                >
+                  ROI
+                </Text>
+                <Text
+                  fontSize="2xl"
+                  fontWeight="bold"
+                  color={{ base: "gray.900", _dark: "white" }}
+                >
+                  {formatPorcentage(values.roi)}
+                </Text>
+                {/* {getIndicatorsPorcentajes(values.netMargin)} */}
+              </Box>
+              {
+                getIconIndicator(values.roi)
               }
             </HStack>
           </Box>
