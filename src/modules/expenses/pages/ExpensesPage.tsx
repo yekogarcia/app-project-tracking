@@ -27,7 +27,12 @@ import { FormExpenses } from "../components/FormExpenses";
 import { expensesService } from "@/services/expenses/ExpensesService";
 // import type { GiReturnArrow } from "react-icons/gi";
 import { IoMdAdd } from "react-icons/io";
-import { formatDate, formatDateShort, formatNumber, showToaster } from "@/app/utils/utils";
+import {
+  formatDate,
+  formatDateShort,
+  formatNumber,
+  showToaster,
+} from "@/app/utils/utils";
 import { projectsService } from "@/services/projects/ProjectsService";
 import type { ISelect } from "@/app";
 import { statusProject } from "@/app/utils/constans";
@@ -46,6 +51,7 @@ const formDefaultsValues = {
 export function ExpensesPage() {
   const [expenses, setExpenses] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [formDefaults, setFormDefaults] = useState<any>(formDefaultsValues);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
@@ -108,7 +114,6 @@ export function ExpensesPage() {
   const getProjects = async () => {
     const response = await projectsService.getProjects("ALL");
     console.log("getProjects", response);
-    
 
     if (response.statusCode === 200) {
       setProjects(response.data);
@@ -129,9 +134,19 @@ export function ExpensesPage() {
   // console.log("expenses", expenses);
   // console.log("projects", projects);
 
-  const filteredExpenses = selectedProject
-    ? expenses.filter((expense) => expense.project_id == selectedProject || (parentId && expense.parent_id == parentId))
-    : expenses;
+  let filteredExpenses = expenses;
+
+  filteredExpenses = selectedProject
+    ? filteredExpenses.filter(
+        (expense) =>
+          expense.project_id == selectedProject ||
+          (parentId && expense.parent_id == parentId),
+      )
+    : filteredExpenses;
+
+  filteredExpenses = selectedStatus
+    ? filteredExpenses.filter((expense) => expense.status == selectedStatus)
+    : filteredExpenses;
 
   const totalEgresos = filteredExpenses.reduce(
     (sum, expense) => sum + parseFloat(expense.total_price),
@@ -139,16 +154,16 @@ export function ExpensesPage() {
   );
 
   const totalOperatingExpenses = filteredExpenses.reduce(
-    (sum, expense) => 
-      expense.type_expense !== 'ACTIVO' ? 
-      sum + parseFloat(expense.total_price)
-      : sum,
+    (sum, expense) =>
+      expense.type_expense !== "ACTIVO"
+        ? sum + parseFloat(expense.total_price)
+        : sum,
     0,
   );
 
   // const totalOperatingExpensesAndcurrents = filteredExpenses.reduce(
-  //   (sum, expense) => 
-  //     expense.type !== "NO CORRIENTE" ? 
+  //   (sum, expense) =>
+  //     expense.type !== "NO CORRIENTE" ?
   //     sum + parseFloat(expense.total_price)
   //     : sum,
   //   0,
@@ -186,6 +201,10 @@ export function ExpensesPage() {
     setParentId(parent ? parent : null);
   };
 
+  const onSelectedStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedStatus(e.target.value);
+  };
+
   return (
     <VStack gap="6" align="stretch">
       <HStack flexWrap="wrap" justify="space-between" align="start">
@@ -209,8 +228,8 @@ export function ExpensesPage() {
                 minW={{ base: "100%", md: "10rem" }}
                 w={{ base: "100%", md: "14rem" }}
                 mr={{ base: "0", md: "2" }}
-                value={selectedProject}
-                onChange={(e) => onSelectedProject(e)}
+                value={selectedStatus}
+                onChange={(e) => onSelectedStatus(e)}
                 placeholder="Selecciona el estado"
               >
                 {statusProject.map((status) => (

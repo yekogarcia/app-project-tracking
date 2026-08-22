@@ -1,7 +1,7 @@
 export const statusProject = [
-    { value: "ACTIVE", label: "ACTIVE" },
+    { value: "ACTIVE", label: "ACTIVO" },
     // { value: "RUNNING", label: "RUNNING" },
-    { value: "SUSPENDED", label: "SUSPENDED" },
-    { value: "CANCELED", label: "CANCELED" },
-    { value: "COMPLETED", label: "COMPLETED" },
+    { value: "SUSPENDED", label: "SUSPENDIDO" },
+    { value: "CANCELED", label: "CANCELADO" },
+    { value: "COMPLETED", label: "COMPLETADO" },
 ];

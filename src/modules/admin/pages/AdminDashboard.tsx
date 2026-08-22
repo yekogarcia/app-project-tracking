@@ -24,6 +24,7 @@ import { useEffect, useState } from "react";
 import { projectsService } from "@/services/projects/ProjectsService";
 import type { ISelect } from "@/app";
 import { formatNumber, formatPorcentage, showToaster } from "@/app/utils/utils";
+import { statusProject } from "@/app/utils/constans";
 
 export function AdminDashboard() {
   const [projects, setProjects] = useState<ISelect[]>([]);
@@ -36,27 +37,23 @@ export function AdminDashboard() {
     grossProfit: 0,
     grossMargin: 0,
     profitability: 0,
-    roi: 0
+    roi: 0,
   });
 
-  const [selectedProject, setSelectedProject] = useState<string>("");
-  const [parentId, setParentId] = useState<number | null>(null);
+  const [selectedProject, setSelectedProject] = useState<number | "">("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  // const [parentId, setParentId] = useState<number | null>(null);
 
   useEffect(() => {
     getProjects();
     getAllTotals();
   }, []);
 
-  // const refreshDashboard = () => {
-  //   getAllTotals();
-  // };
 
   const getAllTotals = async () => {
     const resp = await projectsService.getAllTotals(
-      `projectId=${selectedProject ?? ""}`,
+      `projectId=${selectedProject ?? ""}&status=${selectedStatus ?? ""}`,
     );
-    console.log("parentId", parentId);
-    console.log("getAllTotals", resp);
     if (resp.statusCode !== 200) {
       showToaster({
         type: "warning",
@@ -74,7 +71,7 @@ export function AdminDashboard() {
 
   useEffect(() => {
     getAllTotals();
-  }, [selectedProject]);
+  }, [selectedProject,]);
 
   const calculateValues = () => {
     let totalIncomes = 0;
@@ -93,9 +90,9 @@ export function AdminDashboard() {
       totalIncomes,
       totalExpenses,
       netProfit,
-      netMargin: totalExpenses !== 0 ? netProfit / totalIncomes * 100 : 0,
+      netMargin: totalExpenses !== 0 ? (netProfit / totalIncomes) * 100 : 0,
       grossProfit,
-      grossMargin: totalIncomes !== 0 ? grossProfit / totalIncomes * 100 : 0,
+      grossMargin: totalIncomes !== 0 ? (grossProfit / totalIncomes) * 100 : 0,
       profitability: totalIncomes !== 0 ? (netProfit / totalIncomes) * 100 : 0,
       roi: totalIncomes !== 0 ? (netProfit / totalExpenses) * 100 : 0,
     });
@@ -104,16 +101,14 @@ export function AdminDashboard() {
   // console.log("values", values);
 
   const onSelectedProject = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log("onSelectedProject", e.target.value);
 
-    setSelectedProject(e.target.value);
-    const parent = projects.find((p) => p.parentId == e.target.value)?.parentId;
-    setParentId(parent ? parent : null);
+    setSelectedProject(Number(e.target.value));
+    // const parent = projects.find((p) => p.parentId == e.target.value)?.parentId;
+    // setParentId(parent ? parent : null);
   };
 
   const getProjects = async () => {
     const response = await projectsService.getProjects("ALL");
-    console.log("getProjects", response);
     if (response.statusCode === 200) {
       setProjects(response.data);
     }
@@ -180,20 +175,21 @@ export function AdminDashboard() {
           flexDirection={{ base: "column", md: "row" }}
           gap={{ base: "3", md: "2" }}
         >
-          {/* <NativeSelectField
-                        minW={{ base: "100%", md: "10rem" }}
-                        w={{ base: "100%", md: "14rem" }}
-                        mr={{ base: "0", md: "2" }}
-                        value={selectedProject}
-                        onChange={(e) => onSelectedProject(e)}
-                        placeholder="Selecciona el estado"
-                      >
-                        {statusProject.map((status) => (
-                          <option key={status.value} value={status.value}>
-                            {status.label}
-                          </option>
-                        ))}
-                      </NativeSelectField> */}
+          <NativeSelectField
+            minW={{ base: "100%", md: "10rem" }}
+            w={{ base: "100%", md: "14rem" }}
+            mr={{ base: "0", md: "2" }}
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            placeholder="Selecciona el estado"
+          >
+            {statusProject.map((status) => (
+              <option key={status.value} value={status.value}>
+                {status.label}
+              </option>
+            ))}
+
+          </NativeSelectField>
           <NativeSelectField
             minW={{ base: "100%", md: "10rem" }}
             w={{ base: "100%", md: "14rem" }}
@@ -273,9 +269,11 @@ export function AdminDashboard() {
                 >
                   {formatNumber(values.totalExpenses)}
                 </Text>
-               { <Text fontSize="sm" color="red.500">
-                  ↘ {formatPorcentage(0)}
-                </Text>}
+                {
+                  <Text fontSize="sm" color="red.500">
+                    ↘ {formatPorcentage(0)}
+                  </Text>
+                }
               </Box>
               <Icon
                 as={FiTrendingDown}
@@ -312,11 +310,9 @@ export function AdminDashboard() {
                 >
                   {formatNumber(values.grossProfit)}
                 </Text>
-                 {getIndicatorsPorcentajes(values.grossMargin)}
+                {getIndicatorsPorcentajes(values.grossMargin)}
               </Box>
-              {
-                getIconIndicator(values.grossProfit)
-              }
+              {getIconIndicator(values.grossProfit)}
             </HStack>
           </Box>
         </GridItem>
@@ -346,9 +342,7 @@ export function AdminDashboard() {
                 </Text>
                 {getIndicatorsPorcentajes(values.netMargin)}
               </Box>
-              {
-                getIconIndicator(values.netProfit)
-              }
+              {getIconIndicator(values.netProfit)}
             </HStack>
           </Box>
         </GridItem>
@@ -378,9 +372,7 @@ export function AdminDashboard() {
                 </Text>
                 {/* {getIndicatorsPorcentajes(values.netMargin)} */}
               </Box>
-              {
-                getIconIndicator(values.profitability)
-              }
+              {getIconIndicator(values.profitability)}
             </HStack>
           </Box>
         </GridItem>
@@ -410,13 +402,10 @@ export function AdminDashboard() {
                 </Text>
                 {/* {getIndicatorsPorcentajes(values.netMargin)} */}
               </Box>
-              {
-                getIconIndicator(values.roi)
-              }
+              {getIconIndicator(values.roi)}
             </HStack>
           </Box>
         </GridItem>
-
         <GridItem>
           <Box
             bg={{ base: "white", _dark: "gray.800" }}
