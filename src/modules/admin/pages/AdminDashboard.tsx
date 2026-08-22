@@ -71,7 +71,7 @@ export function AdminDashboard() {
 
   useEffect(() => {
     getAllTotals();
-  }, [selectedProject,]);
+  }, [selectedProject, selectedStatus]);
 
   const calculateValues = () => {
     let totalIncomes = 0;
